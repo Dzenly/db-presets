@@ -1,0 +1,39 @@
+{
+  "name": "db-presets",
+  "version": "0.0.1",
+  "description": "Command line tools and API to work with PostgreSQL database presets. Useful for testing.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "db-p": "bin/db-presets.js"
+  },
+  "engines": {
+    "node": ">=10.15.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dzenly/db-presets.git"
+  },
+  "keywords": [
+    "PostgreSQL",
+    "dump",
+    "preset",
+    "manager"
+  ],
+  "author": "Dzenly <alexchem@yandex.ru>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dzenly/db-presets/issues"
+  },
+  "homepage": "https://github.com/Dzenly/db-presets#readme",
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2"
+  },
+  "dependencies": {
+    "winston": "^2.4.4"
+  }
+}
