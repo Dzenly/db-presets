@@ -66,7 +66,7 @@
 
 ## Добавление пресета на amazon (после создания)
 
-`db-p push-new name=my-preset desc=description`
+`db-p push-new name=my-preset who=my-name desc=description`
 
 ### Шаги:
 
@@ -108,7 +108,7 @@
 
 ## Обновление существующего пресета на amazon (после редактирования)
 
-`db-p push-ex name=my-preset desc=description`
+`db-p push-ex name=my-preset who=my-name desc=description`
 
 ### Шаги:
 
