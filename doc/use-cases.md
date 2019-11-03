@@ -87,11 +87,21 @@
 
 ## Блокировка пресета на запись на amazon S3.
 
-`db-p lock name=my-preset who=my-name desc=description`
+`db-p set-lock name=my-preset who=my-name desc=description`
 
 ### Шаги / Результат:
 
 * В метаданные объекта на Amazon S3 заносится инфа, что объект заблочен, автор и причина.
+
+--------------
+
+## Проверка блокировки пресета на запись на amazon S3.
+
+`db-p get-lock name=my-preset`
+
+### Шаги / Результат:
+
+* Выводится инфа, кто когда и зачем заблокировал.
 
 --------------
 
