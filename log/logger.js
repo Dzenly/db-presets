@@ -1,21 +1,21 @@
 'use strict';
 
 const winston = require('winston');
-const logPrefixer = require('../index.js');
+const logPrefixer = require('dz-log-prefix');
 
-/**
- * logger = new winston.Logger({
-    transports: [
-      new winston.transports.Console({
-        level: process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug'),
-        colorize: true,
-        timestamp: false,
-        prettyPrint: true,
-        showLevel: true,
-      }),
-    ],
-  });
- */
+
+const logger = new winston.Logger({
+  transports: [
+    new winston.transports.Console({
+      level: process.env.LOG_LEVEL || 'info',
+      colorize: true,
+      timestamp: false,
+      prettyPrint: true,
+      showLevel: true,
+    }),
+  ],
+});
+
 
 /**
  * Returns logger.
@@ -23,5 +23,5 @@ const logPrefixer = require('../index.js');
  * @return {Object} - logger.
  */
 module.exports = function getLogger(prefix) {
-  return logPrefixer.addPrefixToCommonLogFuncs(winston, prefix);
+  return logPrefixer.addPrefixToCommonLogFuncs(logger, prefix);
 };
