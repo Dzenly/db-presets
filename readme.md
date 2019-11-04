@@ -13,6 +13,9 @@
 * Node.js >= 10.15.3
 * /opt с установленным приложением.
 * Для работы обязательно проставить переменные окружения.
+* Настроенное ведро (bucket) на Amazon S3 ([См. тут](docs/amazon-s3-setup.md)).
+* Установленная awscli.
+  https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
 
 ## Установка
 

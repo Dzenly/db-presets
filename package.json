@@ -2,8 +2,9 @@
   "name": "db-presets",
   "version": "0.0.1",
   "description": "Command line tools and API to work with PostgreSQL database presets. Useful for testing.",
-  "main": "index.js",
+  "main": "bin/db-presets.js",
   "scripts": {
+    "postinstall": "node post-install/init-inner-data.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
