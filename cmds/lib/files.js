@@ -5,6 +5,10 @@ const path = require('path');
 
 /* eslint-disable no-console */
 
+
+exports.tarXzEncrypt = function tarXzEncrypt()
+
+
 /**
  * Архивирует список директорий и файлов с помощью tar и xz.
  *

@@ -1,5 +1,7 @@
 'use strict';
 
+process.env.TZ = 'UTC';
+
 const [,, ...args] = process.argv;
 
 if (!args.length) {
