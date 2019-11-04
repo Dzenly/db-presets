@@ -131,10 +131,11 @@
 
 ## Выбор пресета
 
-`db-p select preset-name`
+`db-p select preset-name clean=yes`
 
 ### Что происходит:
 
+* Если не проставлен clean, и текущий пресет совпадает с запрашиваемым, завершаем действие без ошибок.
 * Если PostgreSQL работает, он останавливается.
 * Делается rsync нужной директории из `/opt/db-presets/**/*` в DBP_PG_DATA_DIR.
 * Запускается PostgreSQL.
