@@ -1,45 +1,43 @@
 'use strict';
 
 const cp = require('child_process');
-const path = require('path');
+const timer = require('dz-timer-utils');
+const { join } = require('path');
+
+const { changeLogSuffix } = require('consts');
+
+const log = require('../log/logger')('[files] ');
 
 /* eslint-disable no-console */
-
-
-exports.tarXzEncrypt = function tarXzEncrypt()
-
 
 /**
  * Архивирует список директорий и файлов с помощью tar и xz.
  *
- * @param cwd - Текущая рабочая директории.
- * @param dir - Общая директория для всех сабдиректорий и файлов, относительно cwd.
- * @param subdirs - Список директорий для архивации, относительно dir.
- * @param files - Список файлов для архивации, относительно dir.
- * @param artName - Имя архива.
- * @param defaultArtDir - Дефолтная директория для артефактов.
+ * @param cwd - Абсолютный путь к текущей рабочей директории, файлы должны быть в ней,
+ * архив тоже будет в ней.
+ * @param presetName - Имя пресета бд (как имя файла, но без sql).
  */
-module.exports = function tarXz({cwd, dir, subdirs, files, artName, defaultArtDir}) {
-
-  const pathsToTar = subdirs.concat(files).map(item => path.join(dir, item));
-
-  // cwd, pathsToTar, artName, defaultArtDir
-  const artifactsDir = process.env.CI_ART_DIR || defaultArtDir;
-
-  /* eslint-disable-next-line no-param-reassign */
-  artName += '.tar.xz';
-
-  console.time(artName);
-  console.log(`Creating ${artName}...`);
+exports.tarXzEncrypt = function tarXzEncrypt(cwd, presetName) {
+  const xzTimer = timer.startTimer(`${presetName} xz`);
+  log.verbose(`Creating ${presetName} archive ...`);
   cp.execSync(
-    'XZ_OPT="-2 -T0" tar --exclude=.git --exclude=.buildkite --exclude=tia-tests --exclude=.idea -cJSf '
-    + `${artifactsDir}/${artName} ${pathsToTar.join(' ')}`,
+    `tar -cJSf ${presetName}.tar.xz ${presetName}.sql ${presetName}${changeLogSuffix}`,
     {
       cwd,
       windowsHide: true,
     }
   );
-  console.timeEnd(artName);
+  log.verbose(xzTimer.stopTimer(true));
+
+  const ciphTimer = timer.startTimer(`${presetName} cipher`);
+  log.verbose(`Ciphering ${presetName} archive ...`);
+
+
+
+  log.verbose(ciphTimer.stopTimer(true));
+
+
+  console.timeEnd(xzTimeMarker);
 };
 
 

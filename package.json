@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "dz-log-prefix": "^0.3.6",
+    "dz-timer-utils": "^0.1.2",
     "winston": "^2.4.4"
   }
 }

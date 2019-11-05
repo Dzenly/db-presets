@@ -1,18 +1,18 @@
 # Переменные окружения
 
-* DBP_S3_BACKET - бакет на S3, где хранятся данные.
-* DBP_RW_PROFILE_NAME - имя профайла для RW аккаунта.
-* DBP_RO_PROFILE_NAME - имя профайла для RO аккаунта.
 * DBP_AESKEY_PATH - полный путь к файлу, где хранится ключ шифрования.
-* DBP_REPO - репозиторий.
-* DBP_BRANCH - ветка.
-* DBP_MIGR_WD - откуда запускать миграции.
-* DBP_MIGR_CMD - команда, которой запускать миграции.
-* DBP_PG_STOP_CMD - команда остановки postgresql.
-* DBP_PG_START_CMD - команда старта postgresql.
-* DBP_PG_DATA_DIR - директория, где лежит data PostgreSQL базы.
-* DBP_APP_WD - директория с приложением.
 * DBP_APP_START - команда для запуска приложения (должна ожидать момента, когда приложение станет доступно).
 * DBP_APP_STOP - команда для остановки приложения (должна ожидать момента, когда приложение полностью завершится).
+* DBP_APP_WD - директория с приложением.
+* DBP_BRANCH - ветка.
+* DBP_MIGR_CMD - команда, которой запускать миграции.
+* DBP_MIGR_WD - откуда запускать миграции.
+* DBP_PG_DATA_DIR - директория, где лежит data PostgreSQL базы.
+* DBP_PG_START_CMD - команда старта postgresql.
+* DBP_PG_STOP_CMD - команда остановки postgresql.
 * DBP_PRESETS_DIR - где лежат пресеты локально (например, /opt/db-presets).
-
+* DBP_REPO - репозиторий.
+* DBP_RO_PROFILE_NAME - имя профайла для RO аккаунта.
+* DBP_RW_PROFILE_NAME - имя профайла для RW аккаунта.
+* DBP_S3_BACKET - бакет на S3, где хранятся данные.
+* XZ_OPT - стандартная env var для xz.
