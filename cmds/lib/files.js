@@ -1,10 +1,12 @@
 'use strict';
 
+require(process.env.DBP_ENV_VARS_PATH);
+
 const cp = require('child_process');
 const timer = require('dz-timer-utils');
 const { join } = require('path');
 
-const { changeLogSuffix } = require('consts');
+const { changeLogSuffix } = require('../../cfg/consts');
 
 const log = require('../log/logger')('[files] ');
 
@@ -27,17 +29,13 @@ exports.tarXzEncrypt = function tarXzEncrypt(cwd, presetName) {
       windowsHide: true,
     }
   );
+
   log.verbose(xzTimer.stopTimer(true));
 
   const ciphTimer = timer.startTimer(`${presetName} cipher`);
   log.verbose(`Ciphering ${presetName} archive ...`);
 
-
-
   log.verbose(ciphTimer.stopTimer(true));
-
-
-  console.timeEnd(xzTimeMarker);
 };
 
 

@@ -4,8 +4,7 @@
   "description": "Command line tools and API to work with PostgreSQL database presets. Useful for testing.",
   "main": "bin/db-presets.js",
   "scripts": {
-    "postinstall": "node post-install/init-inner-data.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "node npm-scripts/post-install.js"
   },
   "bin": {
     "db-p": "bin/db-presets.js"
