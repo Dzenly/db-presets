@@ -8,4 +8,13 @@ if (!args.length) {
   args.push('-h');
 }
 
-require(`../cmds/${args[0]}`)(args);
+const params = args.slice(1);
+
+const objParams = {};
+
+params.forEach((param) => {
+  const [key, value = true] = param.split('=');
+  objParams[key] = value;
+});
+
+require(`../cmds/${args[0]}`)(objParams);

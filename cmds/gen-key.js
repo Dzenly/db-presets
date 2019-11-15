@@ -1,11 +1,11 @@
 'use strict';
 
-require(process.env.DBP_ENV_VARS_PATH);
-
 const crypto = require('crypto');
 const { existsSync, writeFileSync } = require('fs');
 
-const { aesIVLength, aesKeyLength } = require('../cfg/consts.js');
+require('../common/check-env');
+
+const { aesIVLength, aesKeyLength } = require('../common/consts.js');
 
 const log = require('../log/logger')('[gen-key] ');
 

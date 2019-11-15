@@ -20,10 +20,10 @@ module.exports = function help(args) {
 
 gen-key - сгенерить ключ.
 pull-and-update-local [include=name1,name2] [exclude=name3,name4] - стянуть пресеты.
-db-p push-new name=my-preset who=my-name desc=description - залить пресет на амазон.
-db-p set-lock name=my-preset who=my-name desc=description - блокировка пресета на запись на амазоне.
+db-p push-new name=my-preset creator=my-name desc="some description" - залить пресет на Amazon S3.
+db-p set-lock name=my-preset locker=my-name desc=description - блокировка пресета на запись на амазоне.
 db-p get-lock name=my-preset - проверка блокировки.
-db-p push-ex name=my-preset lock-key=my-key who=my-name desc=description - обновление пресета на S3.
+db-p push-ex name=my-preset lock-key=my-key unlocker=my-name desc=description - обновление пресета на S3.
 db-p select preset-name clean=yes - выбор пресета.
   `);
 

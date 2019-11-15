@@ -43,9 +43,9 @@
 
 * Проверяем, что на amazon есть такая директория. Если нет - ругаемся и выходим.
 * Создается (если не было) папка $DBP_PRESETS_DIR.
-* Создается (если не было) папка `$DBP_PRESETS_DIR/arc/<repo>/<branch>` (архивы).
-* Создается (если не было) папка `$DBP_PRESETS_DIR/sql/<repo>/<branch>` (sql скрипты).
-* Создается (если не было) папка `$DBP_PRESETS_DIR/data/<repo>/<branch>` (бинарная data).
+* Создается (если не было) папка `$DBP_PRESETS_DIR/<repo>/<branch>/arc` (архивы).
+* Создается (если не было) папка `$DBP_PRESETS_DIR/<repo>/<branch>/sql` (sql скрипты).
+* Создается (если не было) папка `$DBP_PRESETS_DIR/<repo>/<branch>/data` (бинарная data).
 * Останавливается приложение (AUT).
 * В папку стягиваются все (с учетом include/exclude) зашифрованные файлы xz из amazon,
   которые не существуют в папке, или изменились.
@@ -68,7 +68,7 @@
 
 ## Добавление пресета на amazon (после создания)
 
-`db-p push-new name=my-preset who=my-name desc=description`
+`db-p push-new name=my-preset creator=my-name desc=description`
 
 ### Шаги:
 
@@ -192,6 +192,3 @@
 ## Перезалив с другим ключом шифрования ?? (TODO)
 
 --------------
-
-
-

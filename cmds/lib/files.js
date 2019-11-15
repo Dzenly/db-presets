@@ -13,7 +13,7 @@ const {
   aesIVLength,
   aesAlgName,
   changeLogSuffix,
-} = require('../../cfg/consts');
+} = require('../../common/consts');
 
 const log = require('../../log/logger')('[files] ');
 
