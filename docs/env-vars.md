@@ -16,6 +16,7 @@
 * DBP_MIGR_CMD - команда, которой запускать миграции.
 * DBP_MIGR_WD - откуда запускать миграции.
 * DBP_PG_DATA_DIR - директория, где лежит data PostgreSQL базы.
+* DBP_PG_PASSWORD - пароль от пользователя postgres.
 * DBP_PG_START_CMD - команда старта postgresql.
 * DBP_PG_STOP_CMD - команда остановки postgresql.
 * DBP_PRESETS_DIR - где лежат пресеты локально (например, /opt/db-presets).

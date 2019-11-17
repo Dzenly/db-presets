@@ -20,6 +20,7 @@ const varNames = [
   'DBP_MIGR_CMD',
   'DBP_MIGR_WD',
   'DBP_PG_DATA_DIR',
+  'DBP_PG_PASSWORD',
   'DBP_PG_START_CMD',
   'DBP_PG_STOP_CMD',
   'DBP_PRESETS_DIR',

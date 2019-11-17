@@ -1,10 +1,5 @@
 'use strict';
 
-const { mkdirSync } = require('fs');
+const init = require('../cmds/init');
 
-const { innerDir, branchDir } = require('../common/consts');
-
-mkdirSync(innerDir, { recursive: true });
-mkdirSync(branchDir, { recursive: true });
-
-
+init();

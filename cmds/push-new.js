@@ -2,33 +2,51 @@
 
 const { existsSync } = require('fs');
 const { join, basename } = require('path');
-const assert = require('assert');
+const { writeFileSync } = require('fs');
+
+const { exec } = require('./lib/exec');
+const { checkPresetAbsent } = require('./lib/s3.js');
+const { tarXzEncrypt } = require('./lib/files');
 
 const consts = require('../common/consts');
 
 const prefix = basename(__filename);
 
-// `$DBP_PRESETS_DIR/<repo>/<branch>/arc`;
-
 function checkPresetExists(name) {
-  const sqlExists = existsSync(join(consts.branchDirSql, `${name}${consts.sqlExt}`));
-  const arcExists = existsSync(join(consts.branchDirArc, `${name}${consts.arcExt}`));
-  const dataExists = existsSync(join(consts.branchDirData, name));
+  let success = true;
 
-  assert(sqlExists === arcExists, `${prefix}: ${name}: sqlExists: ${sqlExists} !== arcExists: ${arcExists}`);
-  assert(!sqlExists, `${prefix}: ${name}: sqlExists: ${sqlExists}`);
-  assert(!dataExists, `${prefix}: ${name}: dataExists: ${dataExists}`);
+  const sqlPath = join(consts.branchDirSql, `${name}${consts.sqlExt}`);
+  const sqlExists = existsSync(sqlPath);
+
+  const arcPath = join(consts.branchDirArc, `${name}${consts.arcExt}`);
+  const arcExists = existsSync(arcPath);
+
+  const dataPath = join(consts.branchDirData, name);
+  const dataExists = existsSync(dataPath);
+
+  if (sqlExists !== arcExists) {
+    console.error(`${prefix}: Данные повреждены, обратитесь к DevOps'у:\n"${sqlPath}" exists: ${sqlExists} !==\n"${arcPath}" exists: ${arcExists}`);
+    success = false;
+  }
+
+  if (sqlExists) {
+    console.error(`Sql : "${arcPath}" уже существует, возможно вам нужна команда push-ex (запушить существующий)`);
+    success = false;
+  }
+
+  if (arcExists) {
+    console.error(`Архив : "${arcPath}" уже существует`);
+    success = false;
+  }
+
+  if (dataExists) {
+    console.error(`Данные : "${dataPath}" уже существуют`);
+    success = false;
+  }
+
+  return success;
 }
 
-// ## Добавление пресета на amazon (после создания)
-//
-// `db-p push-new name=my-preset who=my-name desc=description`
-//
-// ### Шаги:
-//
-// * Проверки на аргументы и переменные окружения.
-// * Проверка что локально нет такого файла, если есть ругнуться, предложить push-ex и выйти.
-// * Проверка, что на amazon s3 нет такого файла. Есть есть - ругнуться и выйти.
 // * `pg_dumpall -h 127.0.0.1 -U postgres --clean > <tmp директория внутри самого модуля>`
 // во временную папку.
 // * Приtarивание к файлу лога изменений в той же временной папке.
@@ -40,7 +58,8 @@ function checkPresetExists(name) {
 // ### Результат:
 //
 // * Текущее состояние БД сохранено на amazon S3 в виде нового зашифрованного пресета.
-// * Внутри объекта - два файла: пресет и текстовый файл с логом изменений, в который занесен description (изменения писать в форме: кто: что_за_изменения).
+// * Внутри объекта - два файла: пресет и текстовый файл с логом изменений, в который занесен description
+// (изменения писать в форме: кто: что_за_изменения).
 //
 // ### Замечания
 //
@@ -55,7 +74,7 @@ function checkPresetExists(name) {
 // Накатили другой. Сохранили. Потребует обновления после каждого наката.
 // Если такое надо будет поддержать, то потом.
 
-module.exports = function pushNew(params) {
+module.exports = async function pushNew(params) {
   let wasError = false;
 
   if (!params.creator) {
@@ -73,8 +92,33 @@ module.exports = function pushNew(params) {
     wasError = true;
   }
 
-  checkPresetExists(params.name);
+  if (wasError) {
+    process.exit(1);
+  }
 
+  if (!checkPresetExists(params.name)) {
+    process.exit(1);
+  }
+
+  checkPresetAbsent(params.name);
+
+  const sqlFile = `${params.name}${consts.sqlExt}`;
+  const changeLogPath = join(consts.branchDirSql, `${params.name}${consts.changeLogSuffix}`);
+
+  const { err } = exec(
+    `PGPASSWORD=${process.env.DBP_PG_PASSWORD} pg_dumpall -h 127.0.0.1 -U postgres --clean > ${sqlFile}`,
+    consts.branchDirSql
+  );
+
+  writeFileSync(changeLogPath, params.desc, 'utf8');
+
+  await tarXzEncrypt(consts.branchDirSql, params.name);
+
+  // ' > <tmp директория внутри самого модуля>';
+
+  // const { out, err } = exec(`aws --profile r-vision-r s3api head-object --bucket rv-db-presets --key r-vision/4.1/image.png`);
+
+  const asdf = 5;
 
   // name=my-preset who=my-name desc=description
 };
