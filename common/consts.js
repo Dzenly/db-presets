@@ -21,3 +21,5 @@ exports.branchDirData = join(exports.branchDir, 'data');
 
 exports.arcExt = '.tar.xz';
 exports.sqlExt = '.sql';
+
+exports.s3KeyPrefix = `${process.env.DBP_REPO}/${process.env.DBP_BRANCH}`;

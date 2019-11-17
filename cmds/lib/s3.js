@@ -1,7 +1,11 @@
 'use strict';
 
+const { join } = require('path');
+
 const logger = require('../../log/logger')('[s3] ');
 const { exec } = require('./exec');
+const { s3KeyPrefix, branchDirArc } = require('../../common/consts');
+
 
 // Думал сначала юзать aws-sdk, но не нашел там sync.
 // Думаю cmd line утилита всегда более свежая и менее глючная, чем SDK.
@@ -16,8 +20,6 @@ const { exec } = require('./exec');
 //   AWS.config.credentials = rwCreds;
 // }
 // const s3 = new AWS.S3({apiVersion: '2006-03-01'}});
-
-// const { out, err } = exec(`aws --profile ${process.env.DBP_RO_PROFILE_NAME} s3api head-object --bucket ${process.env.DBP_S3_BACKET} --key ${process.env.DBP_REPO}/${process.env.DBP_BRANCH}/${name}`);
 
 /**
  *
@@ -41,7 +43,7 @@ exports.execAws = function execAws({
     throw new Error(`Incorrect access: ${access}`);
   }
 
-  const cmdLine = `aws --profile ${profile} ${svc} ${cmd} --bucket ${process.env.DBP_S3_BACKET} ${args}`;
+  const cmdLine = `aws --profile ${profile} ${svc} ${cmd} ${args}`;
 
   logger.verbose(`cmd line: "${cmdLine}"`);
 
@@ -58,7 +60,7 @@ exports.checkPresetAbsent = function checkPresetAbsent(name) {
     svc: 's3api',
     access: 'ro',
     cmd: 'head-object',
-    args: `--key ${process.env.DBP_REPO}/${process.env.DBP_BRANCH}/${name}`,
+    args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name}`,
   });
 
   if (out) {
@@ -68,6 +70,22 @@ exports.checkPresetAbsent = function checkPresetAbsent(name) {
 
   if (!err.includes('Not Found')) {
     throw new Error(`Непредвиденная ошибка: ${err}`);
+  }
+};
+
+exports.push = function push(name) {
+  const arcPath = join(branchDirArc, name);
+
+  const { out, err } = exports.execAws({
+    svc: 's3',
+    access: 'rw',
+    cmd: 'cp',
+    args: `${arcPath} s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix}/${name}`,
+  });
+
+  if (err) {
+    console.error(`Ошибка:\n${err}`);
+    process.exit(1);
   }
 
 };

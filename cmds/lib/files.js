@@ -5,6 +5,8 @@ const { join } = require('path');
 const { readFileSync, createReadStream, createWriteStream } = require('fs');
 const crypto = require('crypto');
 
+const consts = require('../../common/consts');
+
 const timer = require('dz-timer-utils');
 
 require(process.env.DBP_ENV_VARS_PATH);
@@ -22,19 +24,19 @@ const log = require('../../log/logger')('[files] ');
 /**
  * Архивирует пресет и changelog к нему, с помощью tar + gz и шифрует его aes256 алгоритмом.
  *
- * @param cwd - Абсолютный путь к текущей рабочей директории, файлы должны быть в ней,
- * архив тоже будет в ней.
  * @param presetName - Имя пресета бд (как имя файла, но без sql).
  */
-exports.tarXzEncrypt = async function tarXzEncrypt(cwd, presetName) {
+exports.tarXzEncrypt = async function tarXzEncrypt(presetName) {
   const arcName = `${presetName}.tar.xz`;
+
+  const arcPath = join(consts.branchDirArc, arcName);
 
   const xzTimer = timer.startTimer(`${presetName} xz`);
   log.verbose(`Creating ${presetName} archive ...`);
   cp.execSync(
-    `tar -cJSf ${arcName} ${presetName}.sql ${presetName}${changeLogSuffix}`,
+    `tar -cJSf ${arcPath} ${presetName}${consts.sqlExt} ${presetName}${changeLogSuffix}`,
     {
-      cwd,
+      cwd: consts.branchDirSql,
       windowsHide: true,
     }
   );
@@ -52,9 +54,9 @@ exports.tarXzEncrypt = async function tarXzEncrypt(cwd, presetName) {
     vectorAndKey.slice(0, aesIVLength)
   );
 
-  const inputPath = join(cwd, arcName);
+  const inputPath = join(consts.branchDirArc, arcName);
 
-  const outputPath = join(cwd, presetName);
+  const outputPath = join(consts.branchDirArc, presetName);
 
   const input = createReadStream(inputPath);
   const output = createWriteStream(outputPath);

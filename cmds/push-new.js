@@ -5,7 +5,7 @@ const { join, basename } = require('path');
 const { writeFileSync } = require('fs');
 
 const { exec } = require('./lib/exec');
-const { checkPresetAbsent } = require('./lib/s3.js');
+const { checkPresetAbsent, push } = require('./lib/s3.js');
 const { tarXzEncrypt } = require('./lib/files');
 
 const consts = require('../common/consts');
@@ -52,9 +52,11 @@ function checkPresetExists(name) {
 // * Приtarивание к файлу лога изменений в той же временной папке.
 // * xz файла (кол-во потоков = кол-ву процессоров, уровень сжатия - максимальный)
 // * криптование симметричным ключом.
+
+
 // * заливка на amazon S3.
 // * Очистка временной папки.
-//
+
 // ### Результат:
 //
 // * Текущее состояние БД сохранено на amazon S3 в виде нового зашифрованного пресета.
@@ -112,11 +114,9 @@ module.exports = async function pushNew(params) {
 
   writeFileSync(changeLogPath, params.desc, 'utf8');
 
-  await tarXzEncrypt(consts.branchDirSql, params.name);
+  await tarXzEncrypt(params.name);
 
-  // ' > <tmp директория внутри самого модуля>';
-
-  // const { out, err } = exec(`aws --profile r-vision-r s3api head-object --bucket rv-db-presets --key r-vision/4.1/image.png`);
+  push(params.name);
 
   const asdf = 5;
 
