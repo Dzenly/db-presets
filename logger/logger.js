@@ -1,11 +1,7 @@
 'use strict';
 
-const { resolve } = require('path');
-
 const winston = require('winston');
 const logPrefixer = require('dz-log-prefix');
-
-const logFilePath = resolve(__dirname, '..', 'logs', 'actions.log');
 
 const logger = new winston.Logger({
   transports: [
