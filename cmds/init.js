@@ -2,11 +2,10 @@
 
 const { mkdirSync } = require('fs');
 
-const { innerDir, branchDir, branchDirSql, branchDirArc, branchDirData } = require('../common/consts');
+const { branchDir, branchDirSql, branchDirArc, branchDirData } = require('../common/consts');
 const { execWithOutput } = require('./lib/exec');
 
 module.exports = function init() {
-  mkdirSync(innerDir, { recursive: true });
   mkdirSync(branchDir, { recursive: true });
   mkdirSync(branchDirSql, { recursive: true });
   mkdirSync(branchDirArc, { recursive: true });

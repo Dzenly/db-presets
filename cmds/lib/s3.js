@@ -2,7 +2,7 @@
 
 const { join } = require('path');
 
-const logger = require('../../log/logger')('[s3] ');
+const logger = require('../../logger/logger')('[s3] ');
 const { execQuietly, execWithOutput } = require('./exec');
 const { s3KeyPrefix, branchDirArc } = require('../../common/consts');
 

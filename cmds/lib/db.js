@@ -2,7 +2,7 @@
 
 const { mkdirSync } = require('fs');
 const { join } = require('path');
-const { execWithOutput } = require('./exec');
+const { execQuietly, execWithOutput } = require('./exec');
 
 const {
   branchDirData, branchDirSql, sqlExt,
@@ -41,7 +41,6 @@ exports.migrate = function migrate() {
   );
 };
 
-
 exports.restore = function restore(name) {
   const sqlName = `${name}${sqlExt}`;
   console.log(`== Восстанавливаем базу из дампа "${sqlName}"`);
@@ -56,7 +55,7 @@ exports.stopPG = function stopPG(quietly) {
   if (quietly) {
     return execQuietly(cmd, null, true);
   }
-  console.log(`Останавливаем PostgreSQL`);
+  console.log('Останавливаем PostgreSQL');
   return execWithOutput(cmd);
 };
 
@@ -65,31 +64,27 @@ exports.startPG = function startPG(quietly) {
   if (quietly) {
     return execQuietly(cmd, null, true);
   }
-  console.log(`Запускаем PostgreSQL`);
+  console.log('Запускаем PostgreSQL');
   return execWithOutput(cmd);
 };
 
-exports.restoreBin = function restoreBin(name, quietly) {
-
-
-};
-
 /**
- * Ресторит бинарный пресет в течение пары секунд.
- * Rsync-ом синхронизирует директорию data postgresql
+ *
  * @param name
- * @exeption Error - выкинет эксепшн при ошибках.
+ * @param quietly
  */
-export function restoreBinPreset(name: string, enableLog?: EnableLog) {
-  stopPG();
-  const rsyncOut = execSync(
-    `rsync -aAHXch ${process.env.BIN_DB_PRESETS_DIR}/${name}/ ${dbDataPath} --delete`,
-    {
-      cwd: process.env.BIN_DB_PRESETS_DIR,
-      windowsHide: true,
-    },
-  );
-  gIn.tracer.msg4(`rsyncOut:\n${rsyncOut.toString()}`);
-  startPG();
-  lastUsedPreset = name;
-}
+exports.restoreBin = function restoreBin(name, quietly) {
+  exports.stopPG(quietly);
+  const dataPath = join(branchDirData, name);
+
+  const cmd = `rsync -aAHXch ${dataPath}/ ${process.env.DBP_PG_DATA_DIR} --delete`;
+
+  if (quietly) {
+    execQuietly(cmd, null, true);
+  } else {
+    console.log(`Переключаемся на бинарный пресет \n${cmd}`);
+    execWithOutput(cmd);
+  }
+
+  exports.startPG(quietly);
+};

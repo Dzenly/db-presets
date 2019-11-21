@@ -7,7 +7,7 @@ require('../common/check-env');
 
 const { aesIVLength, aesKeyLength } = require('../common/consts.js');
 
-const log = require('../log/logger')('[gen-key] ');
+const log = require('../logger/logger')('[gen-key] ');
 
 module.exports = function genKey() {
   const keyPath = process.env.DBP_AESKEY_PATH;

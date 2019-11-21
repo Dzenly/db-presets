@@ -17,7 +17,7 @@ const {
   changeLogSuffix,
 } = require('../../common/consts');
 
-const log = require('../../log/logger')('[files] ');
+const log = require('../../logger/logger')('[files] ');
 
 /* eslint-disable no-console */
 
