@@ -4,7 +4,7 @@ const { existsSync } = require('fs');
 const { join, basename } = require('path');
 const { writeFileSync } = require('fs');
 
-const { exec } = require('./lib/exec');
+const { execWithOutput } = require('./lib/exec');
 const { checkPresetAbsent, push } = require('./lib/s3.js');
 const { tarXzEncrypt } = require('./lib/files');
 
@@ -18,24 +18,24 @@ function checkPresetExists(name) {
   const sqlPath = join(consts.branchDirSql, `${name}${consts.sqlExt}`);
   const sqlExists = existsSync(sqlPath);
 
-  const arcPath = join(consts.branchDirArc, `${name}${consts.arcExt}`);
-  const arcExists = existsSync(arcPath);
+  const encArcPath = join(consts.branchDirArc, `${name}`);
+  const arcExists = existsSync(encArcPath);
 
   const dataPath = join(consts.branchDirData, name);
   const dataExists = existsSync(dataPath);
 
   if (sqlExists !== arcExists) {
-    console.error(`${prefix}: Данные повреждены, обратитесь к DevOps'у:\n"${sqlPath}" exists: ${sqlExists} !==\n"${arcPath}" exists: ${arcExists}`);
+    console.error(`${prefix}: Данные повреждены, обратитесь к DevOps'у:\n"${sqlPath}" exists: ${sqlExists} !==\n"${encArcPath}" exists: ${arcExists}`);
     success = false;
   }
 
   if (sqlExists) {
-    console.error(`Sql : "${arcPath}" уже существует, возможно вам нужна команда push-ex (запушить существующий)`);
+    console.error(`Sql : "${sqlPath}" уже существует, возможно вам нужна команда push-ex (запушить существующий)`);
     success = false;
   }
 
   if (arcExists) {
-    console.error(`Архив : "${arcPath}" уже существует`);
+    console.error(`Архив : "${encArcPath}" уже существует`);
     success = false;
   }
 
@@ -107,12 +107,12 @@ module.exports = async function pushNew(params) {
   const sqlFile = `${params.name}${consts.sqlExt}`;
   const changeLogPath = join(consts.branchDirSql, `${params.name}${consts.changeLogSuffix}`);
 
-  const { err } = exec(
+  execWithOutput(
     `PGPASSWORD=${process.env.DBP_PG_PASSWORD} pg_dumpall -h 127.0.0.1 -U postgres --clean > ${sqlFile}`,
     consts.branchDirSql
   );
 
-  writeFileSync(changeLogPath, params.desc, 'utf8');
+  writeFileSync(changeLogPath, `${(new Date()).toISOString()}: ${params.creator}: ${params.desc}`, 'utf8');
 
   await tarXzEncrypt(params.name);
 

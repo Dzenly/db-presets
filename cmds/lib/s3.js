@@ -3,7 +3,7 @@
 const { join } = require('path');
 
 const logger = require('../../log/logger')('[s3] ');
-const { exec } = require('./exec');
+const { execQuietly, execWithOutput } = require('./exec');
 const { s3KeyPrefix, branchDirArc } = require('../../common/consts');
 
 
@@ -27,12 +27,14 @@ const { s3KeyPrefix, branchDirArc } = require('../../common/consts');
  * @param cmd - команда.
  * @param access - режим доступа: ro или rw.
  * @param args - доп, аргументы.
+ * @param a
  */
 exports.execAws = function execAws({
   svc,
   access,
   cmd,
   args,
+  quietly,
 }) {
   let profile;
   if (access === 'ro') {
@@ -47,7 +49,10 @@ exports.execAws = function execAws({
 
   logger.verbose(`cmd line: "${cmdLine}"`);
 
-  return exec(cmdLine);
+  if (quietly) {
+    return execQuietly(cmdLine);
+  }
+  return execWithOutput(cmdLine);
 };
 
 /**
@@ -61,6 +66,7 @@ exports.checkPresetAbsent = function checkPresetAbsent(name) {
     access: 'ro',
     cmd: 'head-object',
     args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name}`,
+    quietly: true,
   });
 
   if (out) {
@@ -73,19 +79,37 @@ exports.checkPresetAbsent = function checkPresetAbsent(name) {
   }
 };
 
+/**
+ * Заливает новый зашифрованный архив файл на S3.
+ * @param name
+ */
 exports.push = function push(name) {
   const arcPath = join(branchDirArc, name);
 
-  const { out, err } = exports.execAws({
+  exports.execAws({
     svc: 's3',
     access: 'rw',
     cmd: 'cp',
     args: `${arcPath} s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix}/${name}`,
   });
+};
 
-  if (err) {
-    console.error(`Ошибка:\n${err}`);
-    process.exit(1);
-  }
+exports.ls = function ls() {
+  exports.execAws({
+    svc: 's3',
+    access: 'ro',
+    cmd: 'ls',
+    args: `--recursive --summarize --human-readable s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix}`,
+  });
+};
 
+exports.sync = function sync({ include }) {
+  const includeParams = include ? `--exclude "*" --include "${include}" ` : '';
+
+  exports.execAws({
+    svc: 's3',
+    access: 'ro',
+    cmd: 'sync',
+    args: `--no-progress ${includeParams}--delete s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix} ${branchDirArc}`,
+  });
 };

@@ -2,12 +2,12 @@
 
 const cp = require('child_process');
 const { join } = require('path');
-const { readFileSync, createReadStream, createWriteStream } = require('fs');
+const { readFileSync, createReadStream, createWriteStream, unlinkSync } = require('fs');
 const crypto = require('crypto');
 
+const timer = require('dz-timer-utils');
 const consts = require('../../common/consts');
 
-const timer = require('dz-timer-utils');
 
 require(process.env.DBP_ENV_VARS_PATH);
 
@@ -54,12 +54,12 @@ exports.tarXzEncrypt = async function tarXzEncrypt(presetName) {
     vectorAndKey.slice(0, aesIVLength)
   );
 
-  const inputPath = join(consts.branchDirArc, arcName);
+  const inputArcPath = join(consts.branchDirArc, arcName);
 
-  const outputPath = join(consts.branchDirArc, presetName);
+  const outputEncArcPath = join(consts.branchDirArc, presetName);
 
-  const input = createReadStream(inputPath);
-  const output = createWriteStream(outputPath);
+  const input = createReadStream(inputArcPath);
+  const output = createWriteStream(outputEncArcPath);
 
   await new Promise((resolve, reject) => {
     input.pipe(cipher).pipe(output);
@@ -68,6 +68,8 @@ exports.tarXzEncrypt = async function tarXzEncrypt(presetName) {
   });
 
   log.verbose(ciphTimer.stopTimer(true));
+
+  unlinkSync(inputArcPath);
 };
 
 /**
@@ -77,7 +79,10 @@ exports.tarXzEncrypt = async function tarXzEncrypt(presetName) {
  * результат тоже будет в ней.
  * @param presetName - Имя пресета бд (как имя файла, но без sql).
  */
-exports.decryptUntarXz = async function decryptUntarXz(cwd, presetName) {
+exports.decryptUntarXz = async function decryptUntarXz(presetName) {
+
+  console.log(`== Расшифровываем и распаковываем пресет: ${presetName}`);
+
   const arcName = `${presetName}.tar.xz`;
 
   const vectorAndKey = readFileSync(process.env.DBP_AESKEY_PATH);
@@ -91,12 +96,12 @@ exports.decryptUntarXz = async function decryptUntarXz(cwd, presetName) {
     vectorAndKey.slice(0, aesIVLength)
   );
 
-  const inputPath = join(cwd, presetName);
+  const inputEncArcPath = join(consts.branchDirArc, presetName);
 
-  const outputPath = join(cwd, arcName);
+  const outputArcPath = join(consts.branchDirArc, arcName);
 
-  const input = createReadStream(inputPath);
-  const output = createWriteStream(outputPath);
+  const input = createReadStream(inputEncArcPath);
+  const output = createWriteStream(outputArcPath);
 
   await new Promise((resolve, reject) => {
     input.pipe(decipher).pipe(output);
@@ -107,13 +112,13 @@ exports.decryptUntarXz = async function decryptUntarXz(cwd, presetName) {
   log.verbose(ciphTimer.stopTimer(true));
 
   const xzTimer = timer.startTimer(`${presetName} xz`);
-  log.verbose(`Extracting ${arcName} archive ...`);
-  cp.execSync(`tar -xJf ${arcName}`, {
-    cwd,
-    windowsHide: true
+  log.verbose(`Extracting ${outputArcPath} archive ...`);
+  cp.execSync(`tar -xJf ${outputArcPath}`, {
+    cwd: consts.branchDirSql,
+    windowsHide: true,
   });
 
   log.verbose(xzTimer.stopTimer(true));
-};
 
-exports.decryptUntarXz('/opt/db-presets/r-vision/4.1', 'common');
+  unlinkSync(outputArcPath);
+};

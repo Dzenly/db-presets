@@ -8,6 +8,11 @@
 ## Установка
 
 * Перед установкой заполните все [Переменные окружения](docs/env-vars.md)
+* Если вы не root:
+    * добавьте своего юзера в sudoers.
+    * и дайте ему беспарольный доступ к `chmod`, `chgrp`, и командам, нужным для запуска и остановка PostgreSQL.
+    * Пример строки из `/etc/sudoers`: `alexey ALL = (root) NOPASSWD: /bin/chgrp, /bin/chmod, /usr/bin/mc, /usr/sbin/service postgresql start, /usr/sbin/service postgresql stop`
+    * добавьте его в группу postgres.
 * `npm i -g db-presets`
 * В системе появится утилита `db-p`, и создадутся директории для вашей ветки.
 * Если вы хотите сменить репозиторй или ветку - меняте переменные окружения,
@@ -35,7 +40,7 @@
 
 ## [Переменные окружения](docs/env-vars.md)
 
-## [Сценарии использования](docs/use-cases.md)
+## [Сценарии использования](docs/cmds-help.md)
 
 ## Рекомендации
 

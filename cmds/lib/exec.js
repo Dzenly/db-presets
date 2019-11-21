@@ -2,7 +2,7 @@
 
 const { execSync } = require('child_process');
 
-exports.exec = function exec(cmd, cwd) {
+exports.execQuietly = function execQuietly(cmd, cwd) {
   let out;
   let err;
 
@@ -30,4 +30,27 @@ exports.exec = function exec(cmd, cwd) {
     out,
     err,
   };
+};
+
+exports.execWithOutput = function execWithOutput(cmd, cwd) {
+  const opts = {
+    windowsHide: true,
+    encoding: 'utf8',
+    stdio: [
+      'inherit',
+      'inherit',
+      'inherit',
+    ],
+  };
+
+  if (cwd) {
+    opts.cwd = cwd;
+  }
+
+  try {
+    execSync(cmd, opts);
+  } catch (e) {
+    console.error(e.toString());
+    process.exit(1);
+  }
 };

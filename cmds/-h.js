@@ -18,8 +18,8 @@ module.exports = function help(args) {
 -h - эта помощь.
 -h env - помощь по переменным окружения.
 
-gen-key - сгенерить ключ.
-pull-and-update-local [include=name1,name2] [exclude=name3,name4] - стянуть пресеты.
+gen-key - сгенерить ключ. Запускается один раз на ведро на AWS S3.
+db-p pull [include=name1,name2] [exclude=name3,name4] select=name - стянуть пресеты, накатить на них миграции, cохранить бинарники, выбрать конкретный.
 db-p push-new name=my-preset creator=my-name desc="some description" - залить пресет на Amazon S3.
 db-p set-lock name=my-preset locker=my-name desc=description - блокировка пресета на запись на амазоне.
 db-p get-lock name=my-preset - проверка блокировки.
