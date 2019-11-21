@@ -1,17 +1,28 @@
 'use strict';
 
+const { resolve } = require('path');
+
 const winston = require('winston');
 const logPrefixer = require('dz-log-prefix');
 
+const logFilePath = resolve(__dirname, '..', 'logs', 'actions.log');
 
 const logger = new winston.Logger({
   transports: [
     new winston.transports.Console({
-      level: process.env.LOG_LEVEL || 'info',
+      level: process.env.DBP_CON_LOG_LEVEL || 'info',
       colorize: true,
       timestamp: false,
       prettyPrint: true,
       showLevel: true,
+    }),
+    new winston.transports.File({
+      level: process.env.DBP_FILE_LOG_LEVEL || 'info',
+      timestamp: true,
+      prettyPrint: true,
+      showLevel: true,
+      filename: process.env.DBP_LOGFILE,
+      json: false,
     }),
   ],
 });
