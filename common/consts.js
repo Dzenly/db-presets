@@ -23,3 +23,12 @@ exports.arcExt = '.tar.xz';
 exports.sqlExt = '.sql';
 
 exports.s3KeyPrefix = `${process.env.DBP_REPO}/${process.env.DBP_BRANCH}`;
+
+exports.critErrPrefix = 'DB_P_CRIT_ERR: ';
+
+// По этому префиксу в error.message можно определить, что была критичная ошибка из db_p.
+// Понадобится внутри тестов.
+exports.rethrow = function rethrow(e) {
+  e.message = `${exports.critErrPrefix}${e.message}`;
+  throw e;
+};

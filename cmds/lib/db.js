@@ -52,13 +52,21 @@ exports.restore = function restore(name) {
 };
 
 exports.stopPG = function stopPG(quietly) {
-  const cmd = process.env.DBP_PG_START_CMD;
-
+  const cmd = process.env.DBP_PG_STOP_CMD;
+  if (quietly) {
+    return execQuietly(cmd, null, true);
+  }
+  console.log(`Останавливаем PostgreSQL`);
+  return execWithOutput(cmd);
 };
 
 exports.startPG = function startPG(quietly) {
   const cmd = process.env.DBP_PG_START_CMD;
-
+  if (quietly) {
+    return execQuietly(cmd, null, true);
+  }
+  console.log(`Запускаем PostgreSQL`);
+  return execWithOutput(cmd);
 };
 
 exports.restoreBin = function restoreBin(name, quietly) {

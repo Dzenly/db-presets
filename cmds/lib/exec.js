@@ -1,8 +1,17 @@
 'use strict';
 
+const { rethrow } = require('../../common/consts');
 const { execSync } = require('child_process');
 
-exports.execQuietly = function execQuietly(cmd, cwd) {
+/**
+ * Запускает команду, и собирает stdout и stderr в переменные.
+ * @param cmd - команда.
+ * @param cwd - current working dir.
+ * @param exceptionOnError - генерить ли исключение при ошибке.
+ * @return {{err: *, out: *}} - содержит stdout и stderr.
+ * @throws
+ */
+exports.execQuietly = function execQuietly(cmd, cwd, exceptionOnError) {
   let out;
   let err;
 
@@ -24,6 +33,9 @@ exports.execQuietly = function execQuietly(cmd, cwd) {
     out = execSync(cmd, opts);
   } catch (e) {
     err = e.toString();
+    if (exceptionOnError) {
+      rethrow(e);
+    }
   }
 
   return {
@@ -32,6 +44,13 @@ exports.execQuietly = function execQuietly(cmd, cwd) {
   };
 };
 
+/**
+ * Запускает команду, и выводит её stdout и stderr в родительский процесс.
+ * Если ошибка - вылетает исключение.
+ * @param cmd - команда.
+ * @param cwd - current working dir.
+ * @throws
+ */
 exports.execWithOutput = function execWithOutput(cmd, cwd) {
   const opts = {
     windowsHide: true,
@@ -50,7 +69,6 @@ exports.execWithOutput = function execWithOutput(cmd, cwd) {
   try {
     execSync(cmd, opts);
   } catch (e) {
-    console.error(e.toString());
-    process.exit(1);
+    rethrow(e);
   }
 };
