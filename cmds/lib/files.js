@@ -2,20 +2,23 @@
 
 const cp = require('child_process');
 const { join } = require('path');
-const { readFileSync, createReadStream, createWriteStream, unlinkSync } = require('fs');
+const {
+  readFileSync, writeFileSync, createReadStream, createWriteStream, unlinkSync,
+} = require('fs');
 const crypto = require('crypto');
 
 const timer = require('dz-timer-utils');
-const consts = require('../../common/consts');
-
-
-require(process.env.DBP_ENV_VARS_PATH);
-
 const {
+  branchDirArc,
+  sqlExt,
+  branchDirSql,
   aesIVLength,
   aesAlgName,
   changeLogSuffix,
+  currentPresetInfoFile,
 } = require('../../common/consts');
+
+require(process.env.DBP_ENV_VARS_PATH);
 
 const log = require('../../logger/logger')('[files] ');
 
@@ -29,14 +32,14 @@ const log = require('../../logger/logger')('[files] ');
 exports.tarXzEncrypt = async function tarXzEncrypt(presetName) {
   const arcName = `${presetName}.tar.xz`;
 
-  const arcPath = join(consts.branchDirArc, arcName);
+  const arcPath = join(branchDirArc, arcName);
 
   const xzTimer = timer.startTimer(`${presetName} xz`);
   log.verbose(`Creating ${presetName} archive ...`);
   cp.execSync(
-    `tar -cJSf ${arcPath} ${presetName}${consts.sqlExt} ${presetName}${changeLogSuffix}`,
+    `tar -cJSf ${arcPath} ${presetName}${sqlExt} ${presetName}${changeLogSuffix}`,
     {
-      cwd: consts.branchDirSql,
+      cwd: branchDirSql,
       windowsHide: true,
     }
   );
@@ -54,9 +57,9 @@ exports.tarXzEncrypt = async function tarXzEncrypt(presetName) {
     vectorAndKey.slice(0, aesIVLength)
   );
 
-  const inputArcPath = join(consts.branchDirArc, arcName);
+  const inputArcPath = join(branchDirArc, arcName);
 
-  const outputEncArcPath = join(consts.branchDirArc, presetName);
+  const outputEncArcPath = join(branchDirArc, presetName);
 
   const input = createReadStream(inputArcPath);
   const output = createWriteStream(outputEncArcPath);
@@ -80,7 +83,6 @@ exports.tarXzEncrypt = async function tarXzEncrypt(presetName) {
  * @param presetName - Имя пресета бд (как имя файла, но без sql).
  */
 exports.decryptUntarXz = async function decryptUntarXz(presetName) {
-
   console.log(`== Расшифровываем и распаковываем пресет: ${presetName}`);
 
   const arcName = `${presetName}.tar.xz`;
@@ -88,7 +90,7 @@ exports.decryptUntarXz = async function decryptUntarXz(presetName) {
   const vectorAndKey = readFileSync(process.env.DBP_AESKEY_PATH);
 
   const ciphTimer = timer.startTimer(`${presetName} cipher`);
-  log.verbose(`Deciphering ${presetName} archive ...`);
+  log.verbose(`Deciphering archive "${presetName}" ...`);
 
   const decipher = crypto.createDecipheriv(
     aesAlgName,
@@ -96,9 +98,9 @@ exports.decryptUntarXz = async function decryptUntarXz(presetName) {
     vectorAndKey.slice(0, aesIVLength)
   );
 
-  const inputEncArcPath = join(consts.branchDirArc, presetName);
+  const inputEncArcPath = join(branchDirArc, presetName);
 
-  const outputArcPath = join(consts.branchDirArc, arcName);
+  const outputArcPath = join(branchDirArc, arcName);
 
   const input = createReadStream(inputEncArcPath);
   const output = createWriteStream(outputArcPath);
@@ -112,13 +114,42 @@ exports.decryptUntarXz = async function decryptUntarXz(presetName) {
   log.verbose(ciphTimer.stopTimer(true));
 
   const xzTimer = timer.startTimer(`${presetName} xz`);
-  log.verbose(`Extracting ${outputArcPath} archive ...`);
+  log.verbose(`Extracting archive "${outputArcPath}" ...`);
   cp.execSync(`tar -xJf ${outputArcPath}`, {
-    cwd: consts.branchDirSql,
+    cwd: branchDirSql,
     windowsHide: true,
   });
 
   log.verbose(xzTimer.stopTimer(true));
 
   unlinkSync(outputArcPath);
+};
+
+/**
+ * Возвращает инфу о текущем поставленном пресете:
+ * name - имя пресета.
+ * clean - если true - значит пресет поставлен командой pull, а не командой select,
+ * т.е. этот пресет ещё не использовался в автотестах.
+ * @return {{}|any}
+ */
+exports.getCurPresetInfo = function getCurPresetInfo() {
+  try {
+    const str = readFileSync(currentPresetInfoFile, 'utf8');
+    const data = JSON.parse(str);
+    return data;
+  } catch (e) {
+    return {};
+  }
+};
+
+exports.setCurPresetInfo = function setCurPresetInfo({
+  name,
+  clean, // clean - после pull, т.е. не после select.
+}) {
+  const info = {
+    name,
+    clean,
+  };
+  writeFileSync(currentPresetInfoFile, JSON.stringify(info, null, 2), 'utf8');
+  log.verbose(`setCurPresetInfo: ${JSON.stringify(info)}`);
 };

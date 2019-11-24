@@ -94,22 +94,53 @@ exports.push = function push(name) {
   });
 };
 
-exports.ls = function ls() {
-  exports.execAws({
+exports.ls = function ls(quietly) {
+  return exports.execAws({
     svc: 's3',
     access: 'ro',
     cmd: 'ls',
     args: `--recursive --summarize --human-readable s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix}`,
+    quietly,
   });
 };
 
+exports.lsCleaned = function lsCleaned(quietly) {
+  const { out } = exports.execAws({
+    svc: 's3',
+    access: 'ro',
+    cmd: 'ls',
+    args: `--recursive --summarize --human-readable s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix}`,
+    quietly,
+  });
+
+  const arr = out.split('\n')
+    .filter((item) => item.includes(s3KeyPrefix))
+    .map((item) => {
+      const begin = item.indexOf(`${s3KeyPrefix}/`);
+      return item.slice(begin + s3KeyPrefix.length + 1);
+    })
+    .filter((item) => item !== '');
+
+  return arr;
+};
+
+/**
+ *
+ * @param {Array<string>} include
+ */
 exports.sync = function sync({ include }) {
-  const includeParams = include ? `--exclude "*" --include "${include}" ` : '';
+  let excludeIncludeStr = '';
+  if (include.length) {
+    excludeIncludeStr = `--exclude "*" ${include.map((item) => `--include "${item}"`).join(' ')}`;
+  }
+
+  logger.verbose('==== Синхронизируем локальные пресеты с облачного сервиса.');
+  logger.verbose(`Params: ${excludeIncludeStr}`);
 
   exports.execAws({
     svc: 's3',
     access: 'ro',
     cmd: 'sync',
-    args: `--no-progress ${includeParams}--delete s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix} ${branchDirArc}`,
+    args: `--no-progress ${excludeIncludeStr} --delete s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix} ${branchDirArc}`,
   });
 };

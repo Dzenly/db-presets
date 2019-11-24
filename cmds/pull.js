@@ -2,52 +2,47 @@
 
 const { readdirSync, mkdirSync } = require('fs');
 const { execWithOutput } = require('./lib/exec');
+const logger = require('../logger/logger')('[pull] ');
 
 const s3 = require('./lib/s3');
 const {
   branchDirArc, branchDirSql, branchDirData, sqlExt,
 } = require('../common/consts');
-const { decryptUntarXz } = require('./lib/files');
+const { decryptUntarXz, setCurPresetInfo } = require('./lib/files');
 const { createBinData, migrate, restore } = require('./lib/db');
-
-
-// * Проверяем, что на amazon есть такая директория. Если нет - ругаемся и выходим.
-
-// * Создается (если не было) папка $DBP_PRESETS_DIR.
-// * Создается (если не было) папка `$DBP_PRESETS_DIR/<repo>/<branch>/arc` (архивы).
-// * Создается (если не было) папка `$DBP_PRESETS_DIR/<repo>/<branch>/sql` (sql скрипты).
-// * Создается (если не было) папка `$DBP_PRESETS_DIR/<repo>/<branch>/data` (бинарная data).
-
-
-// * Останавливается приложение (AUT).
-
-// * В папку стягиваются все (с учетом include/exclude) зашифрованные файлы xz из amazon,
-//   которые не существуют в папке, или изменились.
-// * Эти новые или изменившиеся файлы расшифровываются.
-// * Раз-zx-уются.
-
-// * И дальше в цикле по всем пресетам накатываются (`psql -h 127.0.0.1 -U postgres -f name`),
-// накатываются миграции, сохраняются в db-presets-data с помощью pg_basebackup.
-// * Останавливается PostgreSQL.
+const { stop } = require('./lib/app');
 
 // TODO: не разворачивать в data, параметр.
+// Хорошо бы узнать какие файлы синкались, а какие нет.
+// Если какие-то не синкались, то их не надо и разворачивать в бинарные данные.
 
 module.exports = async function pull(params) {
-  // `[only=name] [select=name] [prepare-binary]`;
+  // `[only=name1,name2]`;
 
-  console.log(`==== Останавливаем приложение с помощью: ${process.env.DBP_APP_STOP} из директории: ${process.env.DBP_APP_WD}`);
+  // eslint-disable-next-line no-param-reassign
+  const only = params.only ? params.only.split(',') : [];
 
-  execWithOutput(process.env.DBP_APP_STOP, process.env.DBP_APP_WD);
+  logger.info(`pull, params: ${JSON.stringify(params)}`);
 
-  console.log('==== Синхронизируем локальные пресеты с облачного сервиса.');
+  if (params.only) {
+    const lsArr = s3.lsCleaned(true);
+    for (const onlyItem of only) {
+      if (!lsArr.includes(onlyItem)) {
+        logger.error(`В базе пресетов на S3 нет пресета: ${onlyItem}`);
+        process.exit(1);
+      }
+    }
+  }
+
+  stop();
+
   s3.sync({
-    include: params.only,
+    include: only,
   });
 
   const envArcPresets = params.only ? [params.only] : readdirSync(branchDirArc);
 
   for (const encArcPreset of envArcPresets) {
-
     await decryptUntarXz(encArcPreset);
 
     restore(encArcPreset);
@@ -57,7 +52,12 @@ module.exports = async function pull(params) {
     createBinData(encArcPreset);
   }
 
-  console.log('==== Подправляем права доступа на директории с пресетами.');
+  setCurPresetInfo({
+    name: envArcPresets[envArcPresets.length - 1],
+    clean: true,
+  });
+
+  logger.verbose('==== Подправляем права доступа на директории с пресетами.');
 
   execWithOutput(`sudo chgrp -R postgres  ${process.env.DBP_PRESETS_DIR}`);
   execWithOutput(`sudo chmod -R g+u  ${process.env.DBP_PRESETS_DIR}`);

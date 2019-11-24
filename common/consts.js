@@ -14,6 +14,8 @@ exports.changeLogSuffix = '-clog.txt';
 
 exports.innerDir = join(__dirname, '..', '..', '.inner');
 
+exports.currentPresetInfoFile = join(exports.innerDir, 'cur-preset.json');
+
 exports.branchDir = join(env.DBP_PRESETS_DIR, env.DBP_REPO, env.DBP_BRANCH);
 exports.branchDirArc = join(exports.branchDir, 'arc');
 exports.branchDirSql = join(exports.branchDir, 'sql');
