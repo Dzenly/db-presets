@@ -11,6 +11,7 @@ require(process.env.DBP_ENV_VARS_PATH);
 
 const varNames = [
   'DBP_AESKEY_PATH',
+  'DBP_APP_DEF_URL',
   'DBP_APP_START',
   'DBP_APP_STOP',
   'DBP_APP_WD',

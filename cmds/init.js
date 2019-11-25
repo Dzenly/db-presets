@@ -10,7 +10,9 @@ module.exports = function init() {
   mkdirSync(branchDirSql, { recursive: true });
   mkdirSync(branchDirArc, { recursive: true });
   mkdirSync(branchDirData, { recursive: true });
-  execWithOutput(`sudo chgrp -R -c postgres  ${process.env.DBP_PRESETS_DIR}`);
-  execWithOutput(`sudo chmod -R -c g+u  ${process.env.DBP_PRESETS_DIR}`);
+
+  // execWithOutput(`sudo chown -R postgres:${process.env.USER}  ${process.env.DBP_PRESETS_DIR}`);
+  // execWithOutput(`sudo chown -R postgres:${process.env.USER}  ${process.env.DBP_PRESETS_DIR}`);
+  // execWithOutput(`sudo chmod -R 0750  ${process.env.DBP_PRESETS_DIR}`);
   console.log('Initialization completed.');
 };

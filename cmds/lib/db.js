@@ -3,6 +3,7 @@
 const { mkdirSync } = require('fs');
 const { join } = require('path');
 const { execQuietly, execWithOutput } = require('./exec');
+const { setCurPresetInfo } = require('./files');
 
 const {
   branchDirData, branchDirSql, sqlExt,
@@ -24,8 +25,8 @@ exports.createBinData = function createBinData(name, fixRights) {
 
   if (fixRights) {
     console.log('== Подправляем права доступа на директории с пресетами.');
-    execWithOutput(`sudo chgrp -R postgres  ${dataPath}`);
-    execWithOutput(`sudo chmod -R g+u  ${dataPath}`);
+    execWithOutput(`sudo chown -R postgres:${process.env.USER} ${dataPath}`);
+    execWithOutput(`sudo chmod -R 0750 ${dataPath}`);
   }
 };
 
@@ -77,7 +78,7 @@ exports.restoreBin = function restoreBin(name, quietly) {
   exports.stopPG(quietly);
   const dataPath = join(branchDirData, name);
 
-  const cmd = `rsync -aAHXch ${dataPath}/ ${process.env.DBP_PG_DATA_DIR} --delete`;
+  const cmd = `sudo rsync -aAHXch ${dataPath}/ ${process.env.DBP_PG_DATA_DIR} --delete`;
 
   if (quietly) {
     execQuietly(cmd, null, true);
@@ -85,6 +86,11 @@ exports.restoreBin = function restoreBin(name, quietly) {
     console.log(`Переключаемся на бинарный пресет \n${cmd}`);
     execWithOutput(cmd);
   }
+
+  setCurPresetInfo({
+    name,
+    clean: false,
+  });
 
   exports.startPG(quietly);
 };

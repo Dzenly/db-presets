@@ -10,7 +10,7 @@ const periodToCheckAppMs = 2000;
 const defaultTimeoutMs = 1000 * 60 * 3;
 
 async function waitForAppStart({
-  protHostPort, // e.g. http://127.0.0.1:1337
+  url, // e.g. http://127.0.0.1:1337
   quietly,
   periodMs = periodToCheckAppMs,
   timeoutSec = defaultTimeoutMs,
@@ -29,7 +29,7 @@ async function waitForAppStart({
     }, timeoutSec * 1000);
 
     intervalId = setInterval(() => {
-      const req = http.request(`${protHostPort}/login`, (response) => {
+      const req = http.request(`${url}/login`, (response) => {
         if (response.statusCode === 200) {
           if (!quietly) {
             console.log('Приложение запущено.');
@@ -52,18 +52,18 @@ async function waitForAppStart({
   });
 }
 
-exports.start = async function start(protHostPort, quietly) {
+exports.start = async function start(url, quietly) {
   const startCmd = process.env.DBP_APP_START;
   const cwd = process.env.DBP_APP_WD;
   if (quietly) {
     execQuietly(startCmd, cwd, true);
-    await waitForAppStart({ protHostPort, quietly });
+    await waitForAppStart({ url, quietly });
     return;
   }
   console.log(`==== Запускаем приложение с помощью: ${startCmd} из директории: ${cwd}`);
   execWithOutput(startCmd, cwd);
   console.log('==== Ожидаем приложение...');
-  await waitForAppStart({ protHostPort, quietly });
+  await waitForAppStart({ url, quietly });
 };
 
 

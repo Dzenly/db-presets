@@ -59,8 +59,8 @@ module.exports = async function pull(params) {
 
   logger.verbose('==== Подправляем права доступа на директории с пресетами.');
 
-  execWithOutput(`sudo chgrp -R postgres  ${process.env.DBP_PRESETS_DIR}`);
-  execWithOutput(`sudo chmod -R g+u  ${process.env.DBP_PRESETS_DIR}`);
+  execWithOutput(`sudo chown -R postgres:${process.env.USER} ${branchDirData}`);
+  execWithOutput(`sudo chmod -R 0750 ${branchDirData}`);
 
   // TODO: написать что все завершилось успешно?
 };

@@ -3,6 +3,8 @@
 const winston = require('winston');
 const logPrefixer = require('dz-log-prefix');
 
+// TODO Сделать, чтобы движок тестирования мог задать контекст?
+
 const logger = new winston.Logger({
   transports: [
     new winston.transports.Console({

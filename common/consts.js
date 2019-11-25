@@ -12,7 +12,7 @@ exports.aesIVLength = 128 / 8; // Initialization Vector length (bytes).
 
 exports.changeLogSuffix = '-clog.txt';
 
-exports.innerDir = join(__dirname, '..', '..', '.inner');
+exports.innerDir = join(__dirname, '..', '.inner');
 
 exports.currentPresetInfoFile = join(exports.innerDir, 'cur-preset.json');
 
