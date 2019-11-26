@@ -4,15 +4,11 @@ const crypto = require('crypto');
 
 const s3 = require('./lib/s3');
 const logger = require('../logger/logger')('[set-lock] ');
-const { checkString } = require('./lib/check-params');
+const { checkCall } = require('./lib/check-params');
 
-module.exports = function setlock({ name, who, desc }) {
-  logger.info(`setLock(${name}, ${who}, ${desc})`);
-
-  checkString(name, 'name');
-  checkString(who, 'who');
-  checkString(desc, 'desc');
-
+module.exports = function setlock(params) {
+  checkCall('setLock', params, ['name', 'who', 'desc']);
+  const { name, who, desc } = params;
   const oldMetadata = s3.getMetaData(name);
 
   if (oldMetadata.key) {

@@ -8,7 +8,7 @@ const { execWithOutput } = require('./lib/exec');
 const { checkPresetAbsent, push } = require('./lib/s3.js');
 const { tarXzEncrypt } = require('./lib/files');
 
-const { checkString } = require('./lib/check-params');
+const { checkCall } = require('./lib/check-params');
 
 const logger = require('../logger/logger');
 
@@ -56,13 +56,14 @@ function checkPresetExists(name) {
 // Накатили другой. Сохранили. Потребует обновления после каждого наката.
 // Если такое надо будет поддержать, то потом.
 
-module.exports = async function pushNew({ creator, name, desc }) {
+module.exports = async function pushNew(params) {
+  checkCall('pushNew', params, [
+    'creator',
+    'name',
+    'desc',
+  ]);
 
-  logger.info(`pushNew(${creator}`);
-
-  checkString(creator, 'creator');
-  checkString(name, 'name');
-  checkString(desc, 'desc');
+  const { creator, name, desc } = params;
 
   if (!checkPresetExists(name)) {
     process.exit(1);
@@ -83,4 +84,6 @@ module.exports = async function pushNew({ creator, name, desc }) {
   await tarXzEncrypt(name);
 
   push(name);
+
+  logger.info('pushNew: finished');
 };
