@@ -3,16 +3,16 @@
 const { readdirSync } = require('fs');
 const { branchDirArc } = require('../common/consts');
 const { getCurPresetInfo } = require('./lib/files');
-const log = require('../logger/logger')('[ls] ');
+const logger = require('../logger/logger')('[ls] ');
 const s3 = require('./lib/s3');
+const { checkCall } = require('./lib/check-params');
 
-module.exports = function ls({ where, short }) {
+module.exports = function ls(params) {
+  checkCall('ls', params, ['where']);
+
+  const { where, short } = params;
+
   const { name, clean } = getCurPresetInfo();
-
-  if (!where) {
-    log.error('Параметр "where" обязателен.');
-    process.exit(1);
-  }
 
   if (where === 's3') {
     if (short) {
@@ -24,7 +24,7 @@ module.exports = function ls({ where, short }) {
     const presets = readdirSync(branchDirArc);
     console.log(presets.join('\n'));
   } else {
-    log.error(`Некорректное значение для параметра "where": ${where}`);
+    logger.error(`Некорректное значение для параметра "where": ${where}`);
     process.exit(1);
   }
 

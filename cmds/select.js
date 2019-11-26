@@ -1,14 +1,17 @@
 'use strict';
 
-const app = require('./lib/app');
+const { startApp, stopApp } = require('./lib/app');
 const db = require('./lib/db');
-const { innerDir } = require('../common/consts');
 const { getCurPresetInfo } = require('./lib/files');
 const log = require('../logger/logger')('[select] ');
+const { checkBoolean, checkString } = require('./lib/check-params');
 
 module.exports = async function select({
   name, clean, url = process.env.DBP_APP_DEF_URL, quietly,
 }) {
+  checkString(name, 'name');
+  checkBoolean(clean, 'clean');
+
   log.info(`select(${name}, ${clean}, ${quietly})`);
   const presetInfo = getCurPresetInfo();
   if (presetInfo.name === name) {
@@ -21,9 +24,9 @@ module.exports = async function select({
 
   log.verbose(`Выбран пресет "${presetInfo.name}", а нужен "${name}".`);
 
-  app.stop(quietly);
+  stopApp(quietly);
 
   db.restoreBin(name, quietly);
 
-  await app.start(url, quietly);
+  await startApp(url, quietly);
 };

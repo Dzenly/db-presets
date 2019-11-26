@@ -8,6 +8,10 @@ const { execWithOutput } = require('./lib/exec');
 const { checkPresetAbsent, push } = require('./lib/s3.js');
 const { tarXzEncrypt } = require('./lib/files');
 
+const { checkString } = require('./lib/check-params');
+
+const logger = require('../logger/logger');
+
 const consts = require('../common/consts');
 
 const prefix = basename(__filename);
@@ -47,78 +51,36 @@ function checkPresetExists(name) {
   return success;
 }
 
-// * `pg_dumpall -h 127.0.0.1 -U postgres --clean > <tmp директория внутри самого модуля>`
-// во временную папку.
-// * Приtarивание к файлу лога изменений в той же временной папке.
-// * xz файла (кол-во потоков = кол-ву процессоров, уровень сжатия - максимальный)
-// * криптование симметричным ключом.
-
-
-// * заливка на amazon S3.
-// * Очистка временной папки.
-
-// ### Результат:
-//
-// * Текущее состояние БД сохранено на amazon S3 в виде нового зашифрованного пресета.
-// * Внутри объекта - два файла: пресет и текстовый файл с логом изменений, в который занесен description
-// (изменения писать в форме: кто: что_за_изменения).
-//
-// ### Замечания
-//
-// * Файлы в /opt/db-presets остаются в необновленном состоянии.
-// * Если продолжить редактировать, и сохранить новую версию, все будет ок,
-// т.к. последняя сохраненная и находится в БД.
-// * Чтобы их обновить нужно `db-p pull-and-update-local ...`.
-//
 // ### TODO:
-//
 // * Кейс, когда сначала поредактировали один пресет. Сохранили.
 // Накатили другой. Сохранили. Потребует обновления после каждого наката.
 // Если такое надо будет поддержать, то потом.
 
-module.exports = async function pushNew(params) {
-  let wasError = false;
+module.exports = async function pushNew({ creator, name, desc }) {
 
-  if (!params.creator) {
-    console.log('Обязательно нужно указать ник создателя пресета с помощью опции creator=<ник>.');
-    wasError = true;
-  }
+  logger.info(`pushNew(${creator}`);
 
-  if (!params.name) {
-    console.log('Обязательно нужно указать название пресета с помощью опции name=<название>.');
-    wasError = true;
-  }
+  checkString(creator, 'creator');
+  checkString(name, 'name');
+  checkString(desc, 'desc');
 
-  if (!params.desc) {
-    console.log('Обязательно нужно указать описание пресета с помощью опции desc="<описание пресета>".');
-    wasError = true;
-  }
-
-  if (wasError) {
+  if (!checkPresetExists(name)) {
     process.exit(1);
   }
 
-  if (!checkPresetExists(params.name)) {
-    process.exit(1);
-  }
+  checkPresetAbsent(name);
 
-  checkPresetAbsent(params.name);
-
-  const sqlFile = `${params.name}${consts.sqlExt}`;
-  const changeLogPath = join(consts.branchDirSql, `${params.name}${consts.changeLogSuffix}`);
+  const sqlFile = `${name}${consts.sqlExt}`;
+  const changeLogPath = join(consts.branchDirSql, `${name}${consts.changeLogSuffix}`);
 
   execWithOutput(
     `PGPASSWORD=${process.env.DBP_PG_PASSWORD} pg_dumpall -h 127.0.0.1 -U postgres --clean > ${sqlFile}`,
     consts.branchDirSql
   );
 
-  writeFileSync(changeLogPath, `${(new Date()).toISOString()}: ${params.creator}: ${params.desc}`, 'utf8');
+  writeFileSync(changeLogPath, `${(new Date()).toISOString()}: ${creator}: ${desc}`, 'utf8');
 
-  await tarXzEncrypt(params.name);
+  await tarXzEncrypt(name);
 
-  push(params.name);
-
-  const asdf = 5;
-
-  // name=my-preset who=my-name desc=description
+  push(name);
 };

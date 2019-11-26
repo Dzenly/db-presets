@@ -2,10 +2,10 @@
 
 const { join } = require('path');
 
-const logger = require('../../logger/logger')('[s3] ');
 const { execQuietly, execWithOutput } = require('./exec');
 const { s3KeyPrefix, branchDirArc } = require('../../common/consts');
 
+const logger = require('../../logger/logger')('[s3] ');
 
 // Думал сначала юзать aws-sdk, но не нашел там sync.
 // Думаю cmd line утилита всегда более свежая и менее глючная, чем SDK.
@@ -79,6 +79,47 @@ exports.checkPresetAbsent = function checkPresetAbsent(name) {
   }
 };
 
+exports.getMetaData = function getMetaData(name) {
+  const { out, err } = exports.execAws({
+    svc: 's3api',
+    access: 'ro',
+    cmd: 'head-object',
+    args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name}`,
+    quietly: true,
+  });
+
+  if (out) {
+    const obj = JSON.parse(out);
+    return obj.Metadata;
+  }
+
+  logger.error(`Нет такого объекта в Amazon S3: "${s3KeyPrefix}/${name}"`);
+  process.exit(1);
+};
+
+exports.setMetaData = function setMetaData(name, metaDataObj) {
+  const metaDataStr = Object.entries(metaDataObj)
+    .map(([key, value]) => `${key}="${value}"`)
+    .join(',');
+
+  exports.execAws({
+    svc: 's3api',
+    access: 'rw',
+    cmd: 'put-object',
+    args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name} --metadata ${metaDataStr}`,
+  });
+};
+
+exports.resetMetaData = function resetMetaData(name) {
+  exports.execAws({
+    svc: 's3api',
+    access: 'rw',
+    cmd: 'put-object',
+    args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name} --metadata {}`,
+    quietly: true,
+  });
+};
+
 /**
  * Заливает новый зашифрованный архив файл на S3.
  * @param name
@@ -128,7 +169,7 @@ exports.lsCleaned = function lsCleaned(quietly) {
  *
  * @param {Array<string>} include
  */
-exports.sync = function sync({ include }) {
+exports.sync = function sync({ include, quietly }) {
   let excludeIncludeStr = '';
   if (include.length) {
     excludeIncludeStr = `--exclude "*" ${include.map((item) => `--include "${item}"`).join(' ')}`;
@@ -137,10 +178,23 @@ exports.sync = function sync({ include }) {
   logger.verbose('==== Синхронизируем локальные пресеты с облачного сервиса.');
   logger.verbose(`Params: ${excludeIncludeStr}`);
 
-  exports.execAws({
+  const retObj = exports.execAws({
     svc: 's3',
     access: 'ro',
     cmd: 'sync',
-    args: `--no-progress ${excludeIncludeStr} --delete s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix} ${branchDirArc}`,
+    args: `--no-progress ${excludeIncludeStr} --dryrun --delete s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix} ${branchDirArc}`,
+    quietly,
   });
+
+  if (retObj) {
+    const { out } = retObj;
+
+    const syncedList = (out ? out.split('\n') : [])
+      .map((item) => {
+        const arr = item.split('/');
+        return arr[arr.length - 1];
+      }).filter(Boolean);
+
+    return syncedList;
+  }
 };

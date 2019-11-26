@@ -52,7 +52,7 @@ async function waitForAppStart({
   });
 }
 
-exports.start = async function start(url, quietly) {
+exports.startApp = async function startApp(url, quietly) {
   const startCmd = process.env.DBP_APP_START;
   const cwd = process.env.DBP_APP_WD;
   if (quietly) {
@@ -67,7 +67,7 @@ exports.start = async function start(url, quietly) {
 };
 
 
-exports.stop = function stop(quietly) {
+exports.stopApp = function stopApp(quietly) {
   const cmd = process.env.DBP_APP_STOP;
   const cwd = process.env.DBP_APP_WD;
   if (quietly) {
@@ -76,6 +76,3 @@ exports.stop = function stop(quietly) {
   console.log(`==== Останавливаем приложение с помощью: ${cmd} из директории: ${cwd}`);
   return execWithOutput(cmd, cwd);
 };
-
-//exports.start('http://127.0.0.1:1337');
-// exports.stop();
