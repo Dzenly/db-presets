@@ -16,7 +16,7 @@ module.exports = function setlock(params) {
     process.exit(1);
   }
 
-  const key = crypto.randomBytes(4).toString('hex');
+  const key = crypto.randomBytes(2).toString('hex');
   const date = (new Date()).toISOString();
 
   const newMetadata = {
@@ -28,5 +28,5 @@ module.exports = function setlock(params) {
 
   s3.setMetaData(name, newMetadata);
 
-  logger.info(`Пресет ${name} заблокирован, запомните ключ: "${key}", он будет нужен для разблокировки`);
+  logger.info(`Пресет "${name}" заблокирован, запомните ключ: "${key}", он будет нужен для разблокировки.`);
 };

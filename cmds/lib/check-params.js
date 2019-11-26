@@ -7,6 +7,7 @@ exports.checkString = function checkString(val, paramName) {
     logger.error(`Задайте строковой параметр: "${paramName}", помощь по командам можно посмотреть так: "db-p -h"`);
     return false;
   }
+  return true;
 };
 
 exports.checkBoolean = function checkBoolean(val, paramName) {
@@ -14,6 +15,7 @@ exports.checkBoolean = function checkBoolean(val, paramName) {
     logger.error(`Задайте булевый параметр: "${paramName}", помощь по командам можно посмотреть так: "db-p -h"`);
     return false;
   }
+  return true;
 };
 
 exports.checkCall = function checkCall(funcName, params, stringArgsArr) {
