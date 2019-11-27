@@ -2,7 +2,7 @@
 
 const { existsSync } = require('fs');
 const { join } = require('path');
-const { appendFileSync } = require('fs');
+const { readFileSync, writeFileSync, appendFileSync } = require('fs');
 
 const {
   checkPresetAbsent, push, resetMetaData, getMetaData,
@@ -94,7 +94,10 @@ module.exports = async function update(params) {
   dump(name);
 
   const changeLogPath = join(consts.branchDirSql, `${name}${consts.changeLogSuffix}`);
-  appendFileSync(changeLogPath, `\n${(new Date()).toISOString()}: ${updater}: ${desc}\n`, 'utf8');
+
+  const fileStr = readFileSync(changeLogPath, 'utf8');
+  writeFileSync(`\n${(new Date()).toISOString()}: ${updater}: ${desc}\n`, 'utf8');
+  appendFileSync(changeLogPath, fileStr);
 
   await tarXzEncrypt(name);
 
