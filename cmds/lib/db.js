@@ -13,13 +13,14 @@ const {
  * Создает бинарный пресет из текущего состояния базы.
  * @param name - имя пресета.
  * @param fixRights - нужно ли фиксить права.
- * pull фиксит сразу все права одной командой, поэтому может ставить false.
+ * get фиксит сразу все права одной командой, поэтому может ставить false.
  */
 exports.createBinData = function createBinData(name, fixRights) {
   console.log(`== Сохраняем бинарный пресет для: ${name}`);
 
   const dataPath = join(branchDirData, name);
 
+  execWithOutput(`rm -rf ${dataPath}`);
   mkdirSync(dataPath, { recursive: true });
   execWithOutput(`PGPASSWORD=${process.env.DBP_PG_PASSWORD} pg_basebackup -h 127.0.0.1 -U postgres -D ${dataPath}`);
 
@@ -28,6 +29,14 @@ exports.createBinData = function createBinData(name, fixRights) {
     execWithOutput(`sudo chown -R postgres:${process.env.USER} ${dataPath}`);
     execWithOutput(`sudo chmod -R 0750 ${dataPath}`);
   }
+};
+
+exports.dump = function dump(name) {
+  const sqlFile = `${name}${sqlExt}`;
+  execWithOutput(
+    `PGPASSWORD=${process.env.DBP_PG_PASSWORD} pg_dumpall -h 127.0.0.1 -U postgres --clean > ${sqlFile}`,
+    branchDirSql
+  );
 };
 
 /**

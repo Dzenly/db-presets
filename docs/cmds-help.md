@@ -48,7 +48,7 @@
 
 ## Стянуть все пресеты для заданного репозитория и ветки
 
-`db-p pull [only=name1,name2,...]`
+`db-p get [only=name1,name2,...]`
 
 ### Шаги:
 
@@ -65,7 +65,7 @@
 * И дальше в цикле по всем пресетам накатываются (`psql -h 127.0.0.1 -U postgres -f name`),
 накатываются миграции, сохраняются в db-presets-data с помощью pg_basebackup.
 * Данные о последнем накаченно пресете записываются во внутренние данные,
-и помечается, что они от pull, т.е. clean. Т.е. ещё не участвовали в автотестах.
+и помечается, что они от get, т.е. clean. Т.е. ещё не участвовали в автотестах.
 Автотесты, когда делают setPreset помечают что данные уже использовались в автотестах и стали dirty.
 Некоторые атотесты могут работать с dirty данными, другим подавай clean.
 
@@ -83,7 +83,7 @@
 
 ## Добавление пресета на amazon (после создания)
 
-`db-p push-new name=my-preset creator=my-name desc=description`
+`db-p add name=my-preset creator=my-name desc=description`
 
 ### Шаги:
 
@@ -108,7 +108,7 @@
 * Файлы в /opt/db-presets остаются в необновленном состоянии.
 * Если продолжить редактировать, и сохранить новую версию, все будет ок,
 т.к. последняя сохраненная и находится в БД.
-* Чтобы их обновить нужно `db-p pull-and-update-local ...`.
+* Чтобы их обновить нужно `db-p get`.
 
 * Алгоритм неустойчив, если два автора одинаковый пресет в один момент времени решили создать.
 
@@ -122,7 +122,7 @@
 
 ## Блокировка пресета на запись на amazon S3.
 
-`db-p set-lock name=my-preset who=my-name desc=description`
+`db-p set-lock name=my-preset locker=my-name desc=description`
 
 ### Шаги / Результат:
 
@@ -167,7 +167,7 @@
 
 ## Обновление существующего пресета на amazon (после редактирования)
 
-`db-p push-ex name=my-preset lock-key=my-key desc=description`
+`db-p update name=my-preset key=my-key updater=my-name desc=description`
 
 ### Шаги:
 

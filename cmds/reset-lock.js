@@ -1,12 +1,10 @@
 'use strict';
 
-const crypto = require('crypto');
-
 const s3 = require('./lib/s3');
 const logger = require('../logger/logger')('[set-lock] ');
 const { checkCall } = require('./lib/check-params');
 
-module.exports = function setlock(params) {
+module.exports = function resetLock(params) {
   checkCall('resetLock', params, ['name', 'key']);
   const { name, key } = params;
   const oldMetadata = s3.getMetaData(name);

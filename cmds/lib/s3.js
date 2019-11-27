@@ -70,7 +70,7 @@ exports.checkPresetAbsent = function checkPresetAbsent(name) {
   });
 
   if (out) {
-    console.error(`Такой пресет уже есть:\n${out}`);
+    logger.error(`Такой пресет уже есть:\n${out}`);
     process.exit(1);
   }
 
@@ -87,6 +87,10 @@ exports.getMetaData = function getMetaData(name) {
     args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name}`,
     quietly: true,
   });
+
+  if (err) {
+    logger.error(err.toString());
+  }
 
   if (out) {
     const obj = JSON.parse(out);

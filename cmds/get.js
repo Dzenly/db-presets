@@ -4,7 +4,7 @@ const { execWithOutput } = require('./lib/exec');
 const { checkCall } = require('./lib/check-params');
 
 const { restoreBin } = require('./lib/db');
-const logger = require('../logger/logger')('[pull] ');
+const logger = require('../logger/logger')('[get] ');
 
 const s3 = require('./lib/s3');
 const { branchDirData } = require('../common/consts');
@@ -13,8 +13,8 @@ const { createBinData, migrate, restore } = require('./lib/db');
 const { stopApp } = require('./lib/app');
 
 // TODO: не разворачивать в data, параметр.
-module.exports = async function pull(params) {
-  checkCall('pull', params, 'onlyArr');
+module.exports = async function get(params) {
+  checkCall('get', params, 'onlyArr');
   const { only } = params;
 
   // eslint-disable-next-line no-param-reassign
@@ -71,6 +71,8 @@ module.exports = async function pull(params) {
 
   execWithOutput(`sudo chown -R postgres:${process.env.USER} ${branchDirData}`);
   execWithOutput(`sudo chmod -R 0750 ${branchDirData}`);
+
+  logger.info('get: finished');
 
   // TODO: написать что все завершилось успешно?
 };

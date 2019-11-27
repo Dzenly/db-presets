@@ -1,22 +1,22 @@
 'use strict';
 
-const { existsSync } = require('fs');
-const { join, basename } = require('path');
-const { writeFileSync } = require('fs');
+const { existsSync, writeFileSync } = require('fs');
+const { join } = require('path');
 
-const { execWithOutput } = require('./lib/exec');
 const { checkPresetAbsent, push } = require('./lib/s3.js');
-const { tarXzEncrypt } = require('./lib/files');
-
+const { tarXzEncrypt, setCurPresetInfo } = require('./lib/files');
+const { createBinData, dump } = require('./lib/db');
 const { checkCall } = require('./lib/check-params');
 
-const logger = require('../logger/logger');
+const logger = require('../logger/logger')('[add] ');
 
 const consts = require('../common/consts');
 
-const prefix = basename(__filename);
-
-function checkPresetExists(name) {
+/**
+ * Проверка консистентности и целостности пресета.
+ * @param name
+ */
+function checkPreset(name) {
   let success = true;
 
   const sqlPath = join(consts.branchDirSql, `${name}${consts.sqlExt}`);
@@ -29,26 +29,28 @@ function checkPresetExists(name) {
   const dataExists = existsSync(dataPath);
 
   if (sqlExists !== arcExists) {
-    console.error(`${prefix}: Данные повреждены, обратитесь к DevOps'у:\n"${sqlPath}" exists: ${sqlExists} !==\n"${encArcPath}" exists: ${arcExists}`);
+    logger.error(`Данные повреждены, обратитесь к DevOps'у:\n"${sqlPath}" exists: ${sqlExists} !==\n"${encArcPath}" exists: ${arcExists}`);
     success = false;
   }
 
   if (sqlExists) {
-    console.error(`Sql : "${sqlPath}" уже существует, возможно вам нужна команда push-ex (запушить существующий)`);
+    logger.error(`Sql : "${sqlPath}" уже существует, возможно вам нужна команда push-ex (запушить существующий)`);
     success = false;
   }
 
   if (arcExists) {
-    console.error(`Архив : "${encArcPath}" уже существует`);
+    logger.error(`Архив : "${encArcPath}" уже существует`);
     success = false;
   }
 
   if (dataExists) {
-    console.error(`Данные : "${dataPath}" уже существуют`);
+    logger.error(`Данные : "${dataPath}" уже существуют`);
     success = false;
   }
 
-  return success;
+  if (!success) {
+    process.exit(1);
+  }
 }
 
 // ### TODO:
@@ -57,7 +59,7 @@ function checkPresetExists(name) {
 // Если такое надо будет поддержать, то потом.
 
 module.exports = async function pushNew(params) {
-  checkCall('pushNew', params, [
+  checkCall('add', params, [
     'creator',
     'name',
     'desc',
@@ -65,19 +67,13 @@ module.exports = async function pushNew(params) {
 
   const { creator, name, desc } = params;
 
-  if (!checkPresetExists(name)) {
-    process.exit(1);
-  }
+  checkPreset(name);
 
   checkPresetAbsent(name);
 
-  const sqlFile = `${name}${consts.sqlExt}`;
   const changeLogPath = join(consts.branchDirSql, `${name}${consts.changeLogSuffix}`);
 
-  execWithOutput(
-    `PGPASSWORD=${process.env.DBP_PG_PASSWORD} pg_dumpall -h 127.0.0.1 -U postgres --clean > ${sqlFile}`,
-    consts.branchDirSql
-  );
+  dump(name);
 
   writeFileSync(changeLogPath, `${(new Date()).toISOString()}: ${creator}: ${desc}`, 'utf8');
 
@@ -85,5 +81,12 @@ module.exports = async function pushNew(params) {
 
   push(name);
 
-  logger.info('pushNew: finished');
+  createBinData(name);
+
+  setCurPresetInfo({
+    name,
+    clean: true,
+  });
+
+  logger.info('add: finished');
 };

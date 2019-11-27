@@ -128,7 +128,7 @@ exports.decryptUntarXz = async function decryptUntarXz(presetName) {
 /**
  * Возвращает инфу о текущем поставленном пресете:
  * name - имя пресета.
- * clean - если true - значит пресет поставлен командой pull, а не командой select,
+ * clean - если true - значит пресет поставлен командой get, а не командой select,
  * т.е. этот пресет ещё не использовался в автотестах.
  * @return {{}|any}
  */
@@ -144,7 +144,7 @@ exports.getCurPresetInfo = function getCurPresetInfo() {
 
 exports.setCurPresetInfo = function setCurPresetInfo({
   name,
-  clean, // clean - после pull, т.е. не после select.
+  clean, // clean - после get, т.е. не после select.
 }) {
   const info = {
     name,

@@ -2,4 +2,4 @@
 
 ## Нужно подправить конкретный пресет для конкретного репозитория и конкретной ветки.
 
-* db-p pull include=my-preset
+* db-p get include=my-preset

@@ -2,8 +2,9 @@
 
 const { mkdirSync } = require('fs');
 
-const { branchDir, branchDirSql, branchDirArc, branchDirData } = require('../common/consts');
-const { execWithOutput } = require('./lib/exec');
+const {
+  branchDir, branchDirSql, branchDirArc, branchDirData,
+} = require('../common/consts');
 
 module.exports = function init() {
   mkdirSync(branchDir, { recursive: true });
@@ -11,8 +12,5 @@ module.exports = function init() {
   mkdirSync(branchDirArc, { recursive: true });
   mkdirSync(branchDirData, { recursive: true });
 
-  // execWithOutput(`sudo chown -R postgres:${process.env.USER}  ${process.env.DBP_PRESETS_DIR}`);
-  // execWithOutput(`sudo chown -R postgres:${process.env.USER}  ${process.env.DBP_PRESETS_DIR}`);
-  // execWithOutput(`sudo chmod -R 0750  ${process.env.DBP_PRESETS_DIR}`);
   console.log('Initialization completed.');
 };

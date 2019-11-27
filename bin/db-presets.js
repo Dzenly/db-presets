@@ -5,7 +5,11 @@ process.env.TZ = 'UTC';
 const [,, ...args] = process.argv;
 
 if (!args.length) {
-  args.push('-h');
+  args.push('h');
+}
+
+if (args[0] === '-h') {
+  args[0] = 'h';
 }
 
 const params = args.slice(1);
