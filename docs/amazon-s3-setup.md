@@ -1,4 +1,4 @@
-# Что нужно сделат на Amazon S3
+# Что нужно сделать на Amazon S3
 
 * https://aws.amazon.com/s3/
 
