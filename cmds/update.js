@@ -31,7 +31,7 @@ function checkPreset(name) {
   const dataPath = join(consts.branchDirData, name);
   const dataExists = existsSync(dataPath);
 
-  if (sqlExists && arcExists && dataExists) {
+  if (!sqlExists || !arcExists || !dataExists) {
     logger.error(`Данные повреждены, обратитесь к DevOps'у:\n"${sqlPath}" exists: ${sqlExists} !==\n"${encArcPath}" exists: ${arcExists}`);
     process.exit(1);
   }

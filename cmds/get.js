@@ -57,17 +57,12 @@ module.exports = async function get(params) {
 
     migrate();
 
-    createBinData(encArcPreset);
+    createBinData(encArcPreset, true);
   }
 
   if (toSelect) {
     restoreBin(toSelect);
   }
-
-  logger.verbose('==== Подправляем права доступа на директории с пресетами.');
-
-  execWithOutput(`sudo chown -R postgres:${process.env.USER} ${branchDirData}`);
-  execWithOutput(`sudo chmod -R 0750 ${branchDirData}`);
 
   logger.info('get: finished');
 
