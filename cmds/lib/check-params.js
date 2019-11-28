@@ -10,25 +10,31 @@ exports.checkString = function checkString(val, paramName) {
   return true;
 };
 
-exports.checkBoolean = function checkBoolean(val, paramName) {
-  if (typeof val !== 'boolean') {
-    logger.error(`Задайте булевый параметр: "${paramName}", помощь по командам можно посмотреть так: "db-p -h"`);
-    return false;
+exports.checkCall = function checkCall(
+  funcName,
+  params,
+  {
+    mandatoryArgsArr = [],
+    optionalArgsArr = [],
   }
-  return true;
-};
-
-exports.checkCall = function checkCall(funcName, params, stringArgsArr) {
+) {
   logger.info(`${funcName}(${JSON.stringify(params)})`);
-  if (stringArgsArr) {
-    let wasError = false;
-    for (const key of stringArgsArr) {
-      if (!exports.checkString(params[key], key)) {
-        wasError = true;
-      }
+  let wasError = false;
+
+  for (const key of mandatoryArgsArr) {
+    if (!exports.checkString(params[key], key)) {
+      wasError = true;
     }
-    if (wasError) {
-      process.exit(1);
+  }
+
+  for (const param of Object.keys(params)) {
+    if (!mandatoryArgsArr.includes(param) && !optionalArgsArr.includes(param)) {
+      logger.error(`Неверное название параметра ${param} для функции ${funcName}.`);
+      wasError = true;
     }
+  }
+
+  if (wasError) {
+    process.exit(1);
   }
 };

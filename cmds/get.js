@@ -14,7 +14,7 @@ const { stopApp } = require('./lib/app');
 
 // TODO: не разворачивать в data, параметр.
 module.exports = async function get(params) {
-  checkCall('get', params, 'onlyArr');
+  checkCall('get', params);
   const { only } = params;
 
   // eslint-disable-next-line no-param-reassign

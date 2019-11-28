@@ -63,12 +63,14 @@ function checkPreset(name) {
 // Если такое надо будет поддержать, то потом.
 
 module.exports = async function update(params) {
-  checkCall('update', params, [
-    'name',
-    'key',
-    'updater',
-    'desc',
-  ]);
+  checkCall('update', params, {
+    mandatoryArgsArr: [
+      'name',
+      'key',
+      'updater',
+      'desc',
+    ],
+  });
 
   const {
     name, key, updater, desc,
