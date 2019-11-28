@@ -1,8 +1,9 @@
 'use strict';
 
-const { existsSync } = require('fs');
 const { join } = require('path');
-const { readFileSync, writeFileSync, appendFileSync } = require('fs');
+const {
+  existsSync, readFileSync, writeFileSync, appendFileSync,
+} = require('fs');
 
 const {
   checkPresetAbsent, push, resetMetaData, getMetaData,
@@ -69,8 +70,6 @@ module.exports = async function update(params) {
   }
 
   checkPreset(name);
-
-  checkPresetAbsent(name);
 
   dump(name);
 

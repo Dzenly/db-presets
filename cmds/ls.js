@@ -8,7 +8,10 @@ const s3 = require('./lib/s3');
 const { checkCall } = require('./lib/check-params');
 
 module.exports = function ls(params) {
-  checkCall('ls', params, ['where']);
+  checkCall('ls', params, {
+    mandatoryArgs: ['where'],
+    optionalArgs: ['short'],
+  });
 
   const { where, short } = params;
 

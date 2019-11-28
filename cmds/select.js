@@ -7,9 +7,15 @@ const logger = require('../logger/logger')('[select] ');
 const { checkCall } = require('./lib/check-params');
 
 module.exports = async function select(params) {
-  checkCall('select', params, ['name']);
+  checkCall('select', params, {
+    mandatoryArgs: ['name'],
+    optionalArgs: ['clean', 'quietly', 'url'],
+  });
   const {
-    name, clean, url = process.env.DBP_APP_DEF_URL, quietly,
+    name,
+    clean,
+    url = process.env.DBP_APP_DEF_URL,
+    quietly,
   } = params;
 
   const presetInfo = getCurPresetInfo();

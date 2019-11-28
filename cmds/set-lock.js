@@ -7,7 +7,7 @@ const logger = require('../logger/logger')('[set-lock] ');
 const { checkCall } = require('./lib/check-params');
 
 module.exports = function setlock(params) {
-  checkCall('setLock', params, ['name', 'locker', 'desc']);
+  checkCall('setLock', params, { mandatoryArgs: ['name', 'locker', 'desc'] });
   const { name, locker, desc } = params;
 
   const isChanged = s3.isPresetChanged(name);
