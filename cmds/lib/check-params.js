@@ -14,21 +14,21 @@ exports.checkCall = function checkCall(
   funcName,
   params,
   {
-    mandatoryArgsArr = [],
-    optionalArgsArr = [],
+    mandatoryArgs = [],
+    optionalArgs = [],
   }
 ) {
   logger.info(`${funcName}(${JSON.stringify(params)})`);
   let wasError = false;
 
-  for (const key of mandatoryArgsArr) {
+  for (const key of mandatoryArgs) {
     if (!exports.checkString(params[key], key)) {
       wasError = true;
     }
   }
 
   for (const param of Object.keys(params)) {
-    if (!mandatoryArgsArr.includes(param) && !optionalArgsArr.includes(param)) {
+    if (!mandatoryArgs.includes(param) && !optionalArgs.includes(param)) {
       logger.error(`Неверное название параметра ${param} для функции ${funcName}.`);
       wasError = true;
     }

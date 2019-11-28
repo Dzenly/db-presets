@@ -58,12 +58,14 @@ function checkPreset(name) {
 // Накатили другой. Сохранили. Потребует обновления после каждого наката.
 // Если такое надо будет поддержать, то потом.
 
-module.exports = async function pushNew(params) {
-  checkCall('add', params, [
-    'creator',
-    'name',
-    'desc',
-  ]);
+module.exports = async function add(params) {
+  checkCall('add', params, {
+    mandatoryArgs: [
+      'creator',
+      'name',
+      'desc',
+    ],
+  });
 
   const { creator, name, desc } = params;
 

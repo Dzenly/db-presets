@@ -64,7 +64,7 @@ function checkPreset(name) {
 
 module.exports = async function update(params) {
   checkCall('update', params, {
-    mandatoryArgsArr: [
+    mandatoryArgs: [
       'name',
       'key',
       'updater',

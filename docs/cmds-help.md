@@ -85,7 +85,7 @@
 
 ## Добавление пресета на amazon (после создания)
 
-`db-p add name=my-preset creator=my-name desc=description`
+`db-p add name=<preset-name> creator=<user-name> desc=<preset-description>`
 
 ### Шаги:
 
