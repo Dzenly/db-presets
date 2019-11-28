@@ -29,6 +29,11 @@ exports.createBinData = function createBinData(name, fixRights) {
     execWithOutput(`sudo chown -R postgres:${process.env.USER} ${dataPath}`);
     execWithOutput(`sudo chmod -R 0750 ${dataPath}`);
   }
+
+  setCurPresetInfo({
+    name,
+    clean: true,
+  });
 };
 
 exports.dump = function dump(name) {

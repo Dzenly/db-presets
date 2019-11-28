@@ -126,7 +126,7 @@ exports.decryptUntarXz = async function decryptUntarXz(presetName) {
 };
 
 /**
- * Возвращает инфу о текущем поставленном пресете:
+ * Возвращает инфу о текущем поставленном пресете в виде объекта:
  * name - имя пресета.
  * clean - если true - значит пресет поставлен командой get, а не командой select,
  * т.е. этот пресет ещё не использовался в автотестах.
@@ -139,6 +139,22 @@ exports.getCurPresetInfo = function getCurPresetInfo() {
     return data;
   } catch (e) {
     return {};
+  }
+};
+
+/**
+ * Возвращает инфу о текущем поставленном пресете в виде строки:
+ * name - имя пресета.
+ * clean - если true - значит пресет поставлен командой get, а не командой select,
+ * т.е. этот пресет ещё не использовался в автотестах.
+ * @return {{}|any}
+ */
+exports.getCurPresetInfo = function getCurPresetInfo() {
+  try {
+    const str = readFileSync(currentPresetInfoFile, 'utf8');
+    return str;
+  } catch (e) {
+    return '';
   }
 };
 

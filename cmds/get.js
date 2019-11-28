@@ -8,13 +8,15 @@ const logger = require('../logger/logger')('[get] ');
 
 const s3 = require('./lib/s3');
 const { branchDirData } = require('../common/consts');
-const { decryptUntarXz, setCurPresetInfo } = require('./lib/files');
+const { decryptUntarXz } = require('./lib/files');
 const { createBinData, migrate, restore } = require('./lib/db');
 const { stopApp } = require('./lib/app');
 
 // TODO: не разворачивать в data, параметр.
 module.exports = async function get(params) {
-  checkCall('get', params);
+  checkCall('get', params, {
+    optionalArgs: ['only'],
+  });
   const { only } = params;
 
   // eslint-disable-next-line no-param-reassign
@@ -60,11 +62,6 @@ module.exports = async function get(params) {
 
   if (toSelect) {
     restoreBin(toSelect);
-  } else {
-    setCurPresetInfo({
-      name: syncedList[syncedList.length - 1],
-      clean: true,
-    });
   }
 
   logger.verbose('==== Подправляем права доступа на директории с пресетами.');

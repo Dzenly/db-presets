@@ -186,7 +186,7 @@ exports.sync = function sync({ include, quietly }) {
     svc: 's3',
     access: 'ro',
     cmd: 'sync',
-    args: `--no-progress ${excludeIncludeStr} --dryrun --delete s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix} ${branchDirArc}`,
+    args: `--no-progress ${excludeIncludeStr} --delete s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix} ${branchDirArc}`,
     quietly,
   });
 
@@ -201,4 +201,24 @@ exports.sync = function sync({ include, quietly }) {
 
     return syncedList;
   }
+};
+
+exports.isPresetChanged = function isPresetChanged(name) {
+  logger.verbose(`==== Проверяем были ли изменения в пресете "${name}".`);
+
+  const { out } = exports.execAws({
+    svc: 's3',
+    access: 'ro',
+    cmd: 'sync',
+    args: `--no-progress --dryrun --exclude "*" --include "${name}" --delete s3://${process.env.DBP_S3_BACKET}/${s3KeyPrefix} ${branchDirArc}`,
+    quietly: true,
+  });
+
+  if (out) {
+    logger.warn(`Похоже, в пресете есть изменения на Amazon S3. Сделайте "db-p get only=${name}", чтобы обновить его у себя`);
+    logger.info(`aws s3 sync --dryrun output: ${out}`);
+    return true;
+  }
+
+  return false;
 };

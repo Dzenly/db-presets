@@ -9,6 +9,13 @@ const { checkCall } = require('./lib/check-params');
 module.exports = function setlock(params) {
   checkCall('setLock', params, ['name', 'locker', 'desc']);
   const { name, locker, desc } = params;
+
+  const isChanged = s3.isPresetChanged(name);
+  if (isChanged) {
+    logger.warn(`Ошибка при попытке залочить пресет "${name}"`);
+    process.exit(1);
+  }
+
   const oldMetadata = s3.getMetaData(name);
 
   if (oldMetadata.key) {

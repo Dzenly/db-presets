@@ -5,7 +5,7 @@ const logger = require('../logger/logger')('[get-lock] ');
 const { checkCall } = require('./lib/check-params');
 
 module.exports = function getLock(params) {
-  checkCall('getLock', params, ['name']);
+  checkCall('getLock', params, { mandatoryArgs: ['name'] });
   const { name } = params;
   const metadata = s3.getMetaData(name);
 

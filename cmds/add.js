@@ -34,7 +34,7 @@ function checkPreset(name) {
   }
 
   if (sqlExists) {
-    logger.error(`Sql : "${sqlPath}" уже существует, возможно вам нужна команда push-ex (запушить существующий)`);
+    logger.error(`Sql : "${sqlPath}" уже существует, возможно вам нужна команда "update"`);
     success = false;
   }
 

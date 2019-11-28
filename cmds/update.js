@@ -21,8 +21,6 @@ const consts = require('../common/consts');
  * @param name
  */
 function checkPreset(name) {
-  let success = true;
-
   const sqlPath = join(consts.branchDirSql, `${name}${consts.sqlExt}`);
   const sqlExists = existsSync(sqlPath);
 
@@ -34,25 +32,6 @@ function checkPreset(name) {
 
   if (sqlExists && arcExists && dataExists) {
     logger.error(`Данные повреждены, обратитесь к DevOps'у:\n"${sqlPath}" exists: ${sqlExists} !==\n"${encArcPath}" exists: ${arcExists}`);
-    success = false;
-  }
-
-  if (sqlExists) {
-    logger.error(`Sql : "${sqlPath}" уже существует, возможно вам нужна команда push-ex (запушить существующий)`);
-    success = false;
-  }
-
-  if (arcExists) {
-    logger.error(`Архив : "${encArcPath}" уже существует`);
-    success = false;
-  }
-
-  if (dataExists) {
-    logger.error(`Данные : "${dataPath}" уже существуют`);
-    success = false;
-  }
-
-  if (!success) {
     process.exit(1);
   }
 }
