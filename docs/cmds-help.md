@@ -20,13 +20,13 @@ https://github.com/Dzenly/db-presets/tree/master/cmds
 
 ## Добавление нового пресета
 
-`db-p add name=<preset-name> creator=<user-name> desc=<preset-description>`
+`db-p add name=<preset-name> creator=<user-name> desc="<preset-description>"`
 
 ### Параметры:
 
 * name - имя пресета.
 * creator - имя человека, создающего пресет.
-* desc - описание пресета.
+* desc - описание пресета, используйте кавычки, если описание содержит пробелы.
 
 ### Шаги:
 
@@ -183,6 +183,7 @@ https://github.com/Dzenly/db-presets/tree/master/cmds
 
 ### Замечания.
 
+* Команда нужна, если вы передумали править пресет.
 * Команда `set-lock` возвращает ключ. Только тот, кто знает этот ключ, может разлочить пресет.
 * Если забыли ключ, можно посмотреть в логах, или на крайняк в GUI Amazon S3.
 * Лок снимается автоматически при `update`.
@@ -215,13 +216,13 @@ https://github.com/Dzenly/db-presets/tree/master/cmds
 
 ## Блокировка пресета на запись на Amazon S3.
 
-`db-p set-lock name=<preset-name> locker=<my-name> desc=<description>`
+`db-p set-lock name=<preset-name> locker=<my-name> desc="<description>"`
 
 ### Параметры:
 
 * name - имя пресета.
 * locker - имя пользователя, блокирующего пресет.
-* desc - описание с какой целью заблокировал.
+* desc - описание с какой целью заблокировал, используйте кавычки, если описание содержит пробелы.
 
 ### Шаги / Результат:
 
@@ -259,14 +260,14 @@ https://github.com/Dzenly/db-presets/tree/master/cmds
 
 ## Обновление существующего пресета на amazon (после редактирования)
 
-`db-p update name=<preset-name> key=<lock-key> updater=<my-name> desc=<description>`
+`db-p update name=<preset-name> key=<lock-key> updater=<my-name> desc="<description>"`
 
 ### Параметры:
 
 * name - имя пресета.
 * key - ключ, который выдала команда `db-p set-lock`.
 * updater - юзер, который обновляет пресет.
-* desc - описание, как изменился пресет.
+* desc - описание, как изменился пресет, используйте кавычки, если описание содержит пробелы.
 
 ### Шаги:
 
@@ -307,11 +308,11 @@ https://github.com/Dzenly/db-presets/tree/master/cmds
 
 `db-p what-selected`
 
-### Параметры
+### Параметры:
 
 * Отсутствуют.
 
-### Шаги
+### Шаги/Результат:
 
 * Считать внутренний JSON файл, хранящий эту инфу, и выдать пользователю как есть.
 
