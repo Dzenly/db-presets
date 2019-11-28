@@ -149,7 +149,7 @@ exports.getCurPresetInfo = function getCurPresetInfo() {
  * т.е. этот пресет ещё не использовался в автотестах.
  * @return {{}|any}
  */
-exports.getCurPresetInfo = function getCurPresetInfo() {
+exports.getCurPresetInfoStr = function getCurPresetInfoStr() {
   try {
     const str = readFileSync(currentPresetInfoFile, 'utf8');
     return str;

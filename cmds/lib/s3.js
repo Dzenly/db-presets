@@ -180,7 +180,7 @@ exports.sync = function sync({ include, quietly }) {
   }
 
   logger.verbose('==== Синхронизируем локальные пресеты с облачного сервиса.');
-  logger.verbose(`Params: ${excludeIncludeStr}`);
+  logger.verbose(`Filters: "${excludeIncludeStr}"`);
 
   const retObj = exports.execAws({
     svc: 's3',

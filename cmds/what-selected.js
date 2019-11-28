@@ -1,9 +1,9 @@
 'use strict';
 
 const { checkCall } = require('./lib/check-params');
-const { getCurPresetInfStr } = require('./lib/files');
+const { getCurPresetInfoStr } = require('./lib/files');
 
 module.exports = function whatSelected(params) {
   checkCall('what-selected', params);
-  console.log(getCurPresetInfStr());
+  console.log(getCurPresetInfoStr());
 };
