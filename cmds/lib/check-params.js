@@ -12,11 +12,11 @@ exports.checkString = function checkString(val, paramName) {
 
 exports.checkCall = function checkCall(
   funcName,
-  params,
+  params = {},
   {
     mandatoryArgs = [],
     optionalArgs = [],
-  }
+  } = {}
 ) {
   logger.info(`${funcName}(${JSON.stringify(params)})`);
   let wasError = false;

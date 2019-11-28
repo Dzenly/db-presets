@@ -2,6 +2,8 @@
 
 process.env.TZ = 'UTC';
 
+require('../common/consts');
+
 const [,, ...args] = process.argv;
 
 if (!args.length) {

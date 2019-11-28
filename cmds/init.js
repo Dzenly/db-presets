@@ -1,6 +1,7 @@
 'use strict';
 
 const { mkdirSync } = require('fs');
+require('../common/consts');
 
 const { checkCall } = require('./lib/check-params');
 
