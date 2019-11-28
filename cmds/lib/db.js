@@ -20,6 +20,7 @@ exports.createBinData = function createBinData(name, fixRights) {
 
   const dataPath = join(branchDirData, name);
 
+  execWithOutput(`sudo chmod -R 0770 ${dataPath}`);
   execWithOutput(`rm -rf ${dataPath}`);
   mkdirSync(dataPath, { recursive: true });
   execWithOutput(`PGPASSWORD=${process.env.DBP_PG_PASSWORD} pg_basebackup -h 127.0.0.1 -U postgres -D ${dataPath}`);
