@@ -1,4 +1,6 @@
-'use strict';
+#!/usr/bin/env node
+
+// ':' //# comment; exec /usr/bin/env node "$0" "$@"
 
 process.env.TZ = 'UTC';
 
