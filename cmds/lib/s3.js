@@ -106,20 +106,25 @@ exports.setMetaData = function setMetaData(name, metaDataObj) {
     .map(([key, value]) => `${key}="${value}"`)
     .join(',');
 
+  const arcPath = join(branchDirArc, name);
+
   exports.execAws({
     svc: 's3api',
     access: 'rw',
     cmd: 'put-object',
-    args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name} --metadata ${metaDataStr}`,
+    args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name} --body ${arcPath} --metadata ${metaDataStr}`,
   });
 };
 
 exports.resetMetaData = function resetMetaData(name) {
+
+  const arcPath = join(branchDirArc, name);
+
   exports.execAws({
     svc: 's3api',
     access: 'rw',
     cmd: 'put-object',
-    args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name} --metadata {}`,
+    args: `--bucket ${process.env.DBP_S3_BACKET} --key ${s3KeyPrefix}/${name} --body ${arcPath} --metadata {}`,
     quietly: true,
   });
 };
