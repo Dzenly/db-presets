@@ -24,7 +24,7 @@ process.env.DBP_APP_WD = '/home/alexey/projects/work/smp';
 process.env.DBP_BRANCH = '4.1';
 
 // Команда для наката миграций.
-process.env.DBP_MIGR_CMD = 'VERBOSE=true npm run db';
+process.env.DBP_MIGR_CMD = 'VERBOSE=true npm run db && cd migrations/data/localization-utils && node exploreDB.js && node updateDB.js';
 
 // Полный путь к директории, откуда запускать миграции.
 process.env.DBP_MIGR_WD = process.env.DBP_APP_WD;
