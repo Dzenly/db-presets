@@ -12,6 +12,9 @@ const {
 module.exports = function init(params) {
   checkCall('init', params);
 
+  console.log(`innerDir: ${innerDir}`);
+  console.log(require('child_process').execSync(`whoami`));
+
   mkdirSync(innerDir, { recursive: true });
   mkdirSync(branchDir, { recursive: true });
   mkdirSync(branchDirSql, { recursive: true });
