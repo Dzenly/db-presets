@@ -13,7 +13,7 @@ module.exports = function init(params) {
   checkCall('init', params);
 
   console.log(`innerDir: ${innerDir}`);
-  console.log(require('child_process').execSync(`whoami`));
+  console.log(require('child_process').execSync(`whoami`, { encoding: 'utf8' }));
 
   mkdirSync(innerDir, { recursive: true });
   mkdirSync(branchDir, { recursive: true });
