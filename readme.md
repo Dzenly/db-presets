@@ -29,12 +29,16 @@
     * пример строки из `/etc/sudoers`: `alexey ALL = (root) NOPASSWD: /bin/chown, /bin/chmod, /usr/sbin/service postgresql start, /usr/sbin/service postgresql stop, /usr/bin/rsync`
     * добавьте своего пользователя в группу postgres.
 
-## Установка
+## Установка глобально
 
-* `npm i -g db-presets`
+* `npm i -g db-presets` (для root используйте `npm i --unsafe -g db-presets`).
 * В системе появится утилита `db-p`, и создадутся директории для вашей ветки.
 * Если вы хотите сменить репозиторй или ветку - меняте переменные окружения, и запускаете `db-p init`.
 * Помощь по командам можно посмотреть так: `db-p -h`.
+
+## Установка, чтобы использовать API в коде
+
+`npm i -S db-presets`
 
 ## [Детальное описание команд](docs/cmds-help.md)
 
