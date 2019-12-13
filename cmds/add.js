@@ -4,7 +4,7 @@ const { existsSync, writeFileSync } = require('fs');
 const { join } = require('path');
 
 const { checkPresetAbsent, push } = require('./lib/s3.js');
-const { tarXzEncrypt, setCurPresetInfo } = require('./lib/files');
+const { tarXzEncrypt } = require('./lib/files');
 const { createBinData, dump } = require('./lib/db');
 const { checkCall } = require('./lib/check-params');
 
@@ -83,12 +83,7 @@ module.exports = async function add(params) {
 
   push(name);
 
-  createBinData(name);
-
-  setCurPresetInfo({
-    name,
-    clean: true,
-  });
+  createBinData(name, true);
 
   logger.info('add: finished');
 };

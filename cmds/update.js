@@ -6,9 +6,9 @@ const {
 } = require('fs');
 
 const {
-  checkPresetAbsent, push, resetMetaData, getMetaData,
+  push, resetMetaData, getMetaData,
 } = require('./lib/s3.js');
-const { tarXzEncrypt, setCurPresetInfo } = require('./lib/files');
+const { tarXzEncrypt } = require('./lib/files');
 const { createBinData, dump } = require('./lib/db');
 
 const { checkCall } = require('./lib/check-params');
@@ -84,12 +84,7 @@ module.exports = async function update(params) {
   push(name);
   resetMetaData(name);
 
-  createBinData(name);
-
-  setCurPresetInfo({
-    name,
-    clean: true,
-  });
+  createBinData(name, true);
 
   logger.info('update: finished');
 };
