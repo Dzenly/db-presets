@@ -1,5 +1,6 @@
 'use strict';
 
-const init = require('../cmds/init');
-
-init();
+if (!process.env.DBP_NO_POSTINSTALL) {
+  const init = require('../cmds/init');
+  init();
+}

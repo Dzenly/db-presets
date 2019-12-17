@@ -10,3 +10,7 @@
 
 Пример файла с описанием переменных смотрите [здесь](https://github.com/Dzenly/db-presets/blob/master/cfg/cfg-template.js).
 Откопируйте его себе и проставьте ваши значения.
+
+## Не делать postinstall на build сервере.
+
+* DBP_NO_POSTINSTALL
