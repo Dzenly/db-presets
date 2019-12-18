@@ -76,3 +76,17 @@ exports.stopApp = function stopApp(quietly) {
   console.log(`==== Останавливаем приложение с помощью: ${cmd} из директории: ${cwd}`);
   return execWithOutput(cmd, cwd);
 };
+
+exports.isRunning = async function isRunning(url, quietly) {
+  try {
+    await waitForAppStart({
+      url,
+      quietly,
+      periodMs: 450,
+      timeoutSec: 1.5,
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+};

@@ -1,6 +1,6 @@
 'use strict';
 
-const { startApp, stopApp } = require('./lib/app');
+const { startApp, stopApp, isRunning } = require('./lib/app');
 const db = require('./lib/db');
 const { getCurPresetInfo } = require('./lib/files');
 const logger = require('../logger/logger')('[select] ');
@@ -22,14 +22,19 @@ module.exports = async function select(params) {
   if (presetInfo.name === name) {
     if (presetInfo.clean || !clean) {
       logger.verbose(`Пресет "${name}" уже выбран и он чистый либо чистый не требуется`);
+      if (!await isRunning(url, quietly)) {
+        await startApp(url, quietly);
+      }
       return;
     }
     logger.verbose(`Пресет "${name}" уже выбран, но он dirty, а нужен чистый.`);
+  } else {
+    logger.verbose(`Выбран пресет "${presetInfo.name}", а нужен "${name}".`);
   }
 
-  logger.verbose(`Выбран пресет "${presetInfo.name}", а нужен "${name}".`);
-
-  stopApp(quietly);
+  if (await isRunning(url, quietly)) {
+    stopApp(quietly);
+  }
 
   db.restoreBin(name, quietly);
 
