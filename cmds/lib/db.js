@@ -60,6 +60,7 @@ exports.migrate = function migrate() {
 exports.restore = function restore(name) {
   const sqlName = `${name}${sqlExt}`;
   console.log(`== Восстанавливаем базу из дампа "${sqlName}"`);
+  exports.startPG(true);
   execWithOutput(
     `PGPASSWORD=${process.env.DBP_PG_PASSWORD} psql -h 127.0.0.1 -U postgres -f ${sqlName}`,
     branchDirSql
