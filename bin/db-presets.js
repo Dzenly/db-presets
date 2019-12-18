@@ -4,6 +4,10 @@
 
 process.env.TZ = 'UTC';
 
+process.on('unhandledRejection', () => {
+  process.exit(1);
+});
+
 require('../common/consts');
 
 const [,, ...args] = process.argv;
