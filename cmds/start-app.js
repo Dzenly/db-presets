@@ -9,7 +9,7 @@ module.exports = async function startApplication(params) {
     optionalArgs: ['url', 'quietly'],
   });
   const {
-    url = process.env.DBP_APP_DEF_URL,
+    url,
     quietly,
   } = params;
 

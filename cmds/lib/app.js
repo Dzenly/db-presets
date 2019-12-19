@@ -10,7 +10,7 @@ const periodToCheckAppMs = 2000;
 const defaultTimeoutMs = 1000 * 60 * 3;
 
 async function waitForAppStart({
-  url, // e.g. http://127.0.0.1:1337
+  url = process.env.DBP_APP_DEF_URL,
   quietly,
   periodMs = periodToCheckAppMs,
   timeoutSec = defaultTimeoutMs,

@@ -14,7 +14,7 @@ module.exports = async function select(params) {
   const {
     name,
     clean,
-    url = process.env.DBP_APP_DEF_URL,
+    url,
     quietly,
   } = params;
 
