@@ -1,6 +1,6 @@
 {
   "name": "db-presets",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Command line tools and API to work with PostgreSQL database presets. Useful for testing.",
   "main": "bin/db-presets.js",
   "scripts": {
