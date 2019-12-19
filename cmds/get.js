@@ -10,12 +10,12 @@ const s3 = require('./lib/s3');
 const { branchDirData } = require('../common/consts');
 const { decryptUntarXz } = require('./lib/files');
 const { createBinData, migrate, restore } = require('./lib/db');
-const { stopApp } = require('./lib/app');
+const { stopApp, startApp } = require('./lib/app');
 
 // TODO: не разворачивать в data, параметр.
 module.exports = async function get(params) {
   checkCall('get', params, {
-    optionalArgs: ['only'],
+    optionalArgs: ['only', 'start-app'],
   });
   const { only } = params;
 
@@ -62,6 +62,10 @@ module.exports = async function get(params) {
 
   if (toSelect) {
     restoreBin(toSelect);
+  }
+
+  if (params['start-app']) {
+    await startApp();
   }
 
   logger.info('get: finished');
