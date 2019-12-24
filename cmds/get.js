@@ -1,5 +1,7 @@
 'use strict';
 
+const { readdirSync } = require('fs');
+
 const { execWithOutput } = require('./lib/exec');
 const { checkCall } = require('./lib/check-params');
 
@@ -7,7 +9,7 @@ const { restoreBin } = require('./lib/db');
 const logger = require('../logger/logger')('[get] ');
 
 const s3 = require('./lib/s3');
-const { branchDirData } = require('../common/consts');
+const { branchDirData, branchDirArc } = require('../common/consts');
 const { decryptUntarXz } = require('./lib/files');
 const { createBinData, migrate, restore } = require('./lib/db');
 const { stopApp, startApp } = require('./lib/app');
@@ -38,19 +40,19 @@ module.exports = async function get(params) {
 
   stopApp();
 
-  let syncedList = s3.sync({
+  s3.sync({
     include: onlyArr,
     quietly: true,
   });
 
-  if (syncedList.includes(toSelect)) {
-    // Элемент есть среди тех, кто обновился. Поместим его в конец. Тогда он выберется автоматом.
-    syncedList = syncedList.filter((item) => item !== toSelect);
-    syncedList.push(toSelect);
-    toSelect = null;
-  }
+  let presets = readdirSync(branchDirArc);
 
-  for (const encArcPreset of syncedList) {
+  // Поместим toSelect в конец. Тогда он выберется автоматом.
+  presets = presets.filter((item) => item !== toSelect);
+  presets.push(toSelect);
+  toSelect = null;
+
+  for (const encArcPreset of presets) {
     await decryptUntarXz(encArcPreset);
 
     restore(encArcPreset);
