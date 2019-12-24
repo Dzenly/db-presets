@@ -47,10 +47,12 @@ module.exports = async function get(params) {
 
   let presets = readdirSync(branchDirArc);
 
-  // Поместим toSelect в конец. Тогда он выберется автоматом.
-  presets = presets.filter((item) => item !== toSelect);
-  presets.push(toSelect);
-  toSelect = null;
+  if (toSelect) {
+    // Поместим toSelect в конец. Тогда он выберется автоматом.
+    presets = presets.filter((item) => item !== toSelect);
+    presets.push(toSelect);
+    toSelect = null;
+  }
 
   for (const encArcPreset of presets) {
     await decryptUntarXz(encArcPreset);
