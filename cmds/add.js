@@ -25,6 +25,7 @@ function checkPreset(name) {
 
   if (!wasInit) {
     logger.error('Нет нужных директорий, возможно, нужно сделать db-p init');
+    process.exit(1);
   }
 
   const sqlPath = join(consts.branchDirSql, `${name}${consts.sqlExt}`);
