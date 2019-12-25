@@ -28,6 +28,4 @@ start-app [url] [quietly] - запустить приложение.
 update name=<preset-name> key=<lock-key> updater=<my-name> desc="<description>" - обновление пресета на S3.
 what-selected - посмотреть, какой пресет сейчас выбран, и какой у него статус clean.
   `);
-
-  process.exit(0);
 };

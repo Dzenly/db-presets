@@ -29,4 +29,11 @@ params.forEach((param) => {
   objParams[key] = value;
 });
 
-require(`../cmds/${args[0]}`)(objParams);
+try {
+  require(`../cmds/${args[0]}`)(objParams);
+} catch (e) {
+  console.error(`Наверное, такой команды не существует: "${args[0]}"`);
+  require('../cmds/h')({});
+  console.error(e);
+  process.exit(1);
+}
