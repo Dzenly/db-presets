@@ -19,6 +19,14 @@ const consts = require('../common/consts');
 function checkPreset(name) {
   let success = true;
 
+  const wasInit = existsSync(consts.branchDirSql)
+    && existsSync(consts.branchDirArc)
+    && existsSync(consts.branchDirData);
+
+  if (!wasInit) {
+    logger.error('Нет нужных директорий, возможно, нужно сделать db-p init');
+  }
+
   const sqlPath = join(consts.branchDirSql, `${name}${consts.sqlExt}`);
   const sqlExists = existsSync(sqlPath);
 
