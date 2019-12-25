@@ -16,7 +16,7 @@ module.exports = function help(args) {
 
 add name=<preset-name> creator=<user-name> desc="<preset-description>" - залить пресет на Amazon S3.
 gen-key - сгенерить ключ. Запускается один раз на ведро на AWS S3.
-get [only=name1,name2] - стянуть пресеты, накатить на них миграции, cохранить бинарники, выбрать последний из указанных в only.
+get [only=name1,name2] [start-app] - стянуть пресеты, накатить на них миграции, cохранить бинарники, выбрать последний из указанных в only.
 get-lock name=<preset-name> - выдача инфы о блокировке.
 init - при смене ветки, создание нужных директорий.
 ls where=<local | s3> [short] - листинг Amazon S3 папки с пресетами для репозитория и ветки, заданных в переменных окружения.
