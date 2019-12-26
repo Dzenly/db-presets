@@ -59,7 +59,7 @@ module.exports = async function get(params) {
 
     restore(encArcPreset);
 
-    migrate();
+    migrate(encArcPreset);
 
     createBinData(encArcPreset, true);
   }

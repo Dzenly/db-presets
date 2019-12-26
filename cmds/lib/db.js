@@ -49,8 +49,8 @@ exports.dump = function dump(name) {
  * Накатывает миграции на текущее состояние базы.
  * @param name
  */
-exports.migrate = function migrate() {
-  console.log('== Накатываем миграции на текущее состояние базы.');
+exports.migrate = function migrate(presetName) {
+  console.log(`== Накатываем миграции на текущее состояние базы. Пресет: ${presetName}`);
   execWithOutput(
     process.env.DBP_MIGR_CMD,
     process.env.DBP_MIGR_WD
